@@ -8,8 +8,9 @@
     <string name="error_incorrect_id">Incorrect ID</string>
     <string name="error_incorrect_password">Incorrect password</string>
     <string name="error_field_required">This field is required</string>
+    <string name="response_data_corrupt">Received data has corrupted, please try again</string>
+    <string name="network_error">Network unavailable or connection timeout</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="server_internal_error">Remote server internal error</string>
 
-    <string name="title_activity_welcome">WelcomeActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

@@ -14,7 +14,9 @@ import android.widget.TextView;
 
 import happyyoung.trashnetwork.R;
 
-
+/**
+ * Created by shengyun-zhou <GGGZ-1101-28@Live.cn> on 2017-02-12
+ */
 public class LoginActivity extends AppCompatActivity {
     // UI references.
     private AutoCompleteTextView mIdView;

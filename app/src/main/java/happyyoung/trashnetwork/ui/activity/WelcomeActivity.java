@@ -6,11 +6,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MotionEvent;
-import android.view.View;
 
 import happyyoung.trashnetwork.R;
 
+/**
+ * Created by shengyun-zhou <GGGZ-1101-28@Live.cn> on 2017-02-12
+ */
 public class WelcomeActivity extends AppCompatActivity {
     private void startLoginActivity() {
         Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
