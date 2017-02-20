@@ -15,7 +15,7 @@ public abstract class HttpApiJsonListener<T extends Result> implements HttpListe
     private final Class<T> resultType;
     private Result parsedData;
 
-    public Result getParsedData() {
+    Result getParsedData() {
         return parsedData;
     }
 
@@ -23,7 +23,7 @@ public abstract class HttpApiJsonListener<T extends Result> implements HttpListe
         this.resultType = resultType;
     }
 
-    protected abstract void onResponse(T data);
+    public abstract void onResponse(T data);
 
     @Override
     public final void onResponse(@NonNull byte[] data) throws DataCorruptionException {
@@ -35,7 +35,7 @@ public abstract class HttpApiJsonListener<T extends Result> implements HttpListe
         }
     }
 
-    protected abstract boolean onErrorResponse(int statusCode, Result errorInfo);
+    public abstract boolean onErrorResponse(int statusCode, Result errorInfo);
 
     @Override
     public final boolean onErrorResponse(int statusCode, @NonNull byte[] data) throws DataCorruptionException {

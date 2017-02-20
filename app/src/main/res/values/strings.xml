@@ -5,6 +5,7 @@
     <string name="prompt_id">ID Number</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
+    <string name="error_illegal_id">Illegal ID</string>
     <string name="error_incorrect_id">Incorrect ID</string>
     <string name="error_incorrect_password">Incorrect password</string>
     <string name="error_field_required">This field is required</string>
@@ -12,5 +13,21 @@
     <string name="network_error">Network unavailable or connection timeout</string>
     <string name="unknown_error">Unknown error</string>
     <string name="server_internal_error">Remote server internal error</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_monitor">Monitor</string>
+    <string name="action_work_group">Work Group</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_exit">Exit</string>
+
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="exit_query">Are you sure to exit?</string>
+
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
 
 </resources>

@@ -2,6 +2,7 @@ package happyyoung.trashnetwork.net.http;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.widget.Toast;
@@ -28,7 +29,7 @@ public abstract class HttpApiRequest extends Request {
     private HttpListener mListener;
     private Map<String, String> mHeaderMap = new HashMap<>();
 
-    public HttpApiRequest(final Context context, String url, int method, String token, final HttpListener listener) {
+    public HttpApiRequest(final Context context, String url, int method, @Nullable String token, final HttpListener listener) {
         super(method, url, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -75,7 +76,7 @@ public abstract class HttpApiRequest extends Request {
         byte[] data = response.data;
         if(data == null)
             data = new byte[0];
-        Log.i(TAG, "Received " + data.length + "bytes data, HTTP status code:" + response.statusCode);
+        Log.i(TAG, "Received " + data.length + " bytes data, HTTP status code:" + response.statusCode);
         return Response.success(data, HttpHeaderParser.parseCacheHeaders(response));
     }
 

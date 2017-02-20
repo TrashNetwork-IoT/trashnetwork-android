@@ -5,7 +5,7 @@ package happyyoung.trashnetwork.net.model.result;
  */
 
 public class Result {
-    private int resultCode;
+    private Integer resultCode;
     private String message;
 
     public Result(int resultCode, String message) {
@@ -13,7 +13,7 @@ public class Result {
         this.message = message;
     }
 
-    public int getResultCode() {
+    public Integer getResultCode() {
         return resultCode;
     }
 

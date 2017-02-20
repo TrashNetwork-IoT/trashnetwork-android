@@ -7,6 +7,14 @@
     android:orientation="vertical"
     tools:context="happyyoung.trashnetwork.ui.activity.LoginActivity">
 
+    <ProgressBar android:visibility="invisible"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:indeterminate="true"
+        android:indeterminateOnly="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/login_progress" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -97,8 +105,6 @@
                     app:met_primaryColor="@color/colorAccent"
                     app:met_floatingLabelText="@string/prompt_password"
                     app:met_floatingLabel="highlight"
-                    app:met_minCharacters="6"
-                    app:met_maxCharacters="20"
                     app:met_clearButton="true"
                     android:maxLength="20"
                     android:layout_toRightOf="@+id/icon_password_login" />

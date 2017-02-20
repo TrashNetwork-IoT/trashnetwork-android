@@ -2,6 +2,7 @@ package happyyoung.trashnetwork.net.http;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.android.volley.AuthFailureError;
 
@@ -14,7 +15,7 @@ import happyyoung.trashnetwork.util.GsonUtil;
 public class HttpApiJsonRequest extends HttpApiRequest {
     private Object mRequestData;
 
-    public HttpApiJsonRequest(final Context context, String url, int method, final String token, Object requestData,
+    public HttpApiJsonRequest(final Context context, String url, int method, @Nullable String token, @Nullable Object requestData,
                               final HttpApiJsonListener listener) {
         super(context, url, method, token, new HttpListener() {
             @Override
