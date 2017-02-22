@@ -1,5 +1,6 @@
 package happyyoung.trashnetwork.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -42,12 +43,15 @@ import happyyoung.trashnetwork.util.GlobalInfo;
  * Created by shengyun-zhou <GGGZ-1101-28@Live.cn> on 2017-02-12
  */
 public class LoginActivity extends AppCompatActivity {
+    public static final String BUNDLE_KEY_AUTO_USER_ID = "AutoUserId";
+
     // UI references.
     private AutoCompleteTextView mIdView;
     private EditText mPasswordView;
     private ProgressBar mProgress;
     private Button mSignInButton;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +88,9 @@ public class LoginActivity extends AppCompatActivity {
                 mPortraitView.setImageResource(R.mipmap.ic_launcher);
             }
         });
+        long autoId = getIntent().getLongExtra(BUNDLE_KEY_AUTO_USER_ID, -1);
+        if(autoId > 0)
+            mIdView.setText(Long.toString(autoId));
 
         mPasswordView = (EditText) findViewById(R.id.login_password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {

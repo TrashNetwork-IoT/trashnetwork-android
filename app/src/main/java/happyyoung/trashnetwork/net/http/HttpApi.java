@@ -7,11 +7,11 @@ import com.android.volley.toolbox.Volley;
  * Created by shengyun-zhou <GGGZ-1101-28@Live.cn> on 2017-02-12
  */
 public class HttpApi {
-    private static final String BASE_URL = "http://happyyoung-pc.chinacloudapp.cn:23000/trashnetwork/v1/mobile";
+    public static String BASE_URL_V1;
     private static RequestQueue requestQueue = null;
 
     public static String getApiUrl(String... urlParam){
-        String url = BASE_URL;
+        String url = BASE_URL_V1;
         for(String s : urlParam){
             if(s != null && !s.isEmpty())
                 url += '/' + s;
@@ -30,5 +30,6 @@ public class HttpApi {
         public static final String LOGOUT = "account/logout";
         public static final String CHECK_LOGIN = "account/check_login";
         public static final String USER_INFO_BY_ID = "account/user_info/by_id";
+        public static final String ALL_GROUP_USERS = "account/all_group_users";
     }
 }

@@ -1,5 +1,8 @@
 package happyyoung.trashnetwork.util;
 
+import android.content.Context;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import happyyoung.trashnetwork.model.User;
@@ -10,5 +13,11 @@ import happyyoung.trashnetwork.model.User;
 public class GlobalInfo {
     public static String token;
     public static User user;
-    public static List<User> groupWorkers;
+    public static List<User> groupWorkers = new ArrayList<>();
+
+    public static void logout(Context context){
+        token = null;
+        user = null;
+        groupWorkers.clear();
+    }
 }

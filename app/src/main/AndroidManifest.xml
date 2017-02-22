@@ -35,18 +35,26 @@
         <meta-data
             android:name="AA_SERIALIZERS"
             android:value="happyyoung.trashnetwork.database.serializer.BitmapSerializer" />
+        <meta-data
+            android:name="TN_HTTP_API_BASE_URL_V1"
+            android:value="http://happyyoung-pc.chinacloudapp.cn:23000/trashnetwork/v1/mobile" />
 
-        <activity android:name=".ui.activity.LoginActivity"/>
+        <activity android:name=".ui.activity.LoginActivity" />
         <activity
             android:name=".ui.activity.WelcomeActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".ui.activity.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.activity.SettingsActivity"
+            android:label="@string/action_settings" />
     </application>
 
 </manifest>
