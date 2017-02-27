@@ -20,4 +20,14 @@ public class GlobalInfo {
         user = null;
         groupWorkers.clear();
     }
+
+    public static User findUserById(long userId){
+        if(userId == user.getUserId())
+            return user;
+        for(User u : groupWorkers){
+            if(u.getUserId() == userId)
+                return u;
+        }
+        return null;
+    }
 }

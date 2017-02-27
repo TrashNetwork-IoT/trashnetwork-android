@@ -23,5 +23,7 @@
     <dimen name="large_icon_size">48dp</dimen>
     <dimen name="larger_icon_size">56dp</dimen>
     <dimen name="welcome_icon_size">128dp</dimen>
+    <dimen name="tab_layout_size">35dp</dimen>
+    <dimen name="item_padding">8dp</dimen>
 
 </resources>

@@ -14,7 +14,7 @@
     <string name="unknown_error">Unknown error</string>
     <string name="server_internal_error">Remote server internal error</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="alert_waiting">Please waiting…</string>
+    <string name="alert_waiting">Please wait…</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -32,8 +32,12 @@
     <string name="yesterday">Yesterday</string>
     <string name="other">Other</string>
     <string name="action_logout">Logout</string>
+    <string name="action_message">Message</string>
+    <string name="action_contact">Contact</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_message">No message</string>
+    <string name="cleaners">Cleaners</string>
+    <string name="managers">Managers</string>
+    <string name="groups">Groups</string>
 
 </resources>

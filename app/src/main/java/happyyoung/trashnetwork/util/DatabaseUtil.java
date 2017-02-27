@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import happyyoung.trashnetwork.database.model.LoginUserRecord;
+import happyyoung.trashnetwork.database.model.SessionRecord;
 import happyyoung.trashnetwork.model.User;
 
 /**
@@ -33,5 +34,10 @@ public class DatabaseUtil {
     public static LoginUserRecord findLoginUserRecord(long userId){
         return new Select().from(LoginUserRecord.class).where("UserId=?", userId)
                 .executeSingle();
+    }
+
+    public static List<SessionRecord> findAllSessionRecords(long userId){
+        return new Select().from(SessionRecord.class).where("OwnerUserId=?", userId)
+                .execute();
     }
 }
