@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/item_padding">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/chat_sender_portrait"
+        android:layout_width="@dimen/large_icon_size"
+        android:layout_height="@dimen/large_icon_size"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/item_padding"
+        android:layout_marginStart="@dimen/item_padding"
+        app:civ_border_width="1dp"
+        app:civ_fill_color="@color/grey_200"
+        app:civ_border_color="@android:color/white"/>
+
+    <me.himanshusoni.chatmessageview.ChatMessageView
+        android:id="@+id/chat_chatbox_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/chatbox_space"
+        android:layout_marginBottom="@dimen/item_padding"
+        android:layout_toStartOf="@+id/chat_sender_portrait"
+        app:cmv_backgroundColor="@color/amber_500"
+        app:cmv_backgroundColorPressed="@color/amber_600"
+        app:cmv_cornerRadius="5dp"
+        app:cmv_arrowGravity="start"
+        app:cmv_arrowPosition="right"
+        app:cmv_showArrow="true">
+    </me.himanshusoni.chatmessageview.ChatMessageView>
+
+    <me.himanshusoni.chatmessageview.ChatMessageView
+        android:id="@+id/chat_time_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/item_padding"
+        android:layout_marginStart="@dimen/item_padding"
+        android:layout_toStartOf="@+id/chat_sender_portrait"
+        android:layout_below="@+id/chat_chatbox_view"
+        app:cmv_backgroundColor="@android:color/black"
+        android:clickable="false"
+        android:alpha="0.3"
+        app:cmv_contentPadding="3dp"
+        app:cmv_cornerRadius="3dp"
+        app:cmv_showArrow="false">
+
+        <TextView
+            android:id="@+id/chat_msg_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/smaller_text_size"/>
+
+    </me.himanshusoni.chatmessageview.ChatMessageView>
+
+    <ProgressBar
+        android:id="@+id/chat_send_progress"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/chat_time_box"
+        android:layout_below="@+id/chat_chatbox_view"
+        android:layout_marginBottom="@dimen/item_padding" />
+
+</RelativeLayout>

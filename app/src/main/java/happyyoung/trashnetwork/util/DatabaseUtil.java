@@ -40,4 +40,10 @@ public class DatabaseUtil {
         return new Select().from(SessionRecord.class).where("OwnerUserId=?", userId)
                 .execute();
     }
+
+    public static SessionRecord findSessionRecord(long userId, char sessionType, long sessionId){
+        return new Select().from(SessionRecord.class).where("OwnerUserId=?", userId)
+                .where("SessionId=?", SessionRecord.getOriginalSessionId(sessionType, sessionId))
+                .executeSingle();
+    }
 }

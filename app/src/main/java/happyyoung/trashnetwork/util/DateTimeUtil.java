@@ -13,7 +13,7 @@ import happyyoung.trashnetwork.R;
  */
 public class DateTimeUtil {
     @SuppressLint("SimpleDateFormat")
-    private static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:");
+    private static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
     @SuppressLint("SimpleDateFormat")
     private static SimpleDateFormat sdf2 = new SimpleDateFormat("MM-dd");
     @SuppressLint("SimpleDateFormat")

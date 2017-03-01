@@ -1,6 +1,7 @@
 package happyyoung.trashnetwork.ui.fragment.workgroup;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,8 +14,10 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import happyyoung.trashnetwork.R;
 import happyyoung.trashnetwork.adapter.ContactListContactHolder;
 import happyyoung.trashnetwork.adapter.ContactListRootHolder;
+import happyyoung.trashnetwork.database.model.SessionRecord;
 import happyyoung.trashnetwork.listener.ContactListener;
 import happyyoung.trashnetwork.model.User;
+import happyyoung.trashnetwork.ui.activity.ChatActivity;
 import happyyoung.trashnetwork.util.GlobalInfo;
 
 public class ContactFragment extends Fragment implements ContactListener {
@@ -58,7 +61,7 @@ public class ContactFragment extends Fragment implements ContactListener {
     }
 
     @Override
-    public void onAddContact(User newContact) {
+    public void onAddContact(final User newContact) {
         if(rootView == null)
             return;
         if(newContact.getAccountType() == User.ACCOUNT_TYPE_CLEANER) {
@@ -66,7 +69,7 @@ public class ContactFragment extends Fragment implements ContactListener {
                     .setViewHolder(new ContactListContactHolder(getContext(), new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            //TODO
+                            enterChatting(SessionRecord.SESSION_TYPE_USER, newContact.getUserId());
                         }
                     })));
             ((ContactListRootHolder)cleanerListRoot.getViewHolder()).updateNodeView(
@@ -76,11 +79,18 @@ public class ContactFragment extends Fragment implements ContactListener {
                     .setViewHolder(new ContactListContactHolder(getContext(), new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            //TODO
+                            enterChatting(SessionRecord.SESSION_TYPE_USER, newContact.getUserId());
                         }
                     })));
             ((ContactListRootHolder)managerListRoot.getViewHolder()).updateNodeView(
                     new ContactListRootHolder.IconTextItem(R.drawable.ic_contacts, getString(R.string.managers), managerListRoot.getChildren().size()));
         }
+    }
+
+    private void enterChatting(char sessionType, long sessionId){
+        Intent intent = new Intent(getContext(), ChatActivity.class);
+        intent.putExtra(ChatActivity.BUNDLE_KEY_SESSION_TYPE, sessionType);
+        intent.putExtra(ChatActivity.BUNDLE_KEY_SESSION_ID, sessionId);
+        startActivity(intent);
     }
 }

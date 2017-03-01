@@ -5,7 +5,8 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 
-import java.util.Collections;
+import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class SessionRecord extends Model implements Comparable<SessionRecord> {
 
     @Column(name = "SessionId", notNull = true, uniqueGroups = {"OwnerUserId", "SessionId"},
             indexGroups = {"OwnerUserId", "SessionId"})
-    private String originSessionId;
+    private String originalSessionId;
 
     @Column(name = "UnreadMessageCount")
     private int unreadMessageCount;
@@ -32,14 +33,14 @@ public class SessionRecord extends Model implements Comparable<SessionRecord> {
         super();
     }
 
-    public SessionRecord(int ownerUserId, char sessionType, long sessionId, int unreadMessageCount) {
+    public SessionRecord(long ownerUserId, char sessionType, long sessionId, int unreadMessageCount) {
         super();
         this.ownerUserId = ownerUserId;
-        this.originSessionId = "" + sessionType + sessionId;
+        this.originalSessionId = getOriginalSessionId(sessionType, sessionId);
         this.unreadMessageCount = unreadMessageCount;
     }
 
-    public SessionRecord(int ownerUserId, char sessionType, long sessionId) {
+    public SessionRecord(long ownerUserId, char sessionType, long sessionId) {
         this(ownerUserId, sessionType, sessionId, 0);
     }
 
@@ -52,20 +53,20 @@ public class SessionRecord extends Model implements Comparable<SessionRecord> {
     }
 
     public char getSessionType(){
-        if(originSessionId == null)
+        if(originalSessionId == null)
             return SESSION_TYPE_UNKNOWN;
-        if(originSessionId.startsWith("" + SESSION_TYPE_GROUP))
+        if(originalSessionId.startsWith("" + SESSION_TYPE_GROUP))
             return SESSION_TYPE_GROUP;
-        else if(originSessionId.startsWith("" + SESSION_TYPE_USER))
+        else if(originalSessionId.startsWith("" + SESSION_TYPE_USER))
             return SESSION_TYPE_USER;
         else
             return SESSION_TYPE_UNKNOWN;
     }
 
     public long getSessionId(){                 //Session ID represents group ID or user ID
-        if(originSessionId == null)
+        if(originalSessionId == null)
             return -1;
-        return Long.valueOf(originSessionId.substring(1));
+        return Long.valueOf(originalSessionId.substring(1));
     }
 
     public Integer getUnreadMessageCount() {
@@ -81,12 +82,22 @@ public class SessionRecord extends Model implements Comparable<SessionRecord> {
     }
 
     public ChatMessageRecord getLatestMessage(){
-        return new Select().from(ChatMessageRecord.class).where("Session=", this)
-                .orderBy("MessageType DESC").limit(1).executeSingle();
+        return new Select().from(ChatMessageRecord.class).where("Session=?", this)
+                .orderBy("MessageTime DESC").limit(1).executeSingle();
+    }
+
+    public List<ChatMessageRecord> getMessages(Date endTime, int limit){
+        return new Select().from(ChatMessageRecord.class).where("Session=?", this)
+                .where("MessageTime<=?", endTime.getTime())
+                .orderBy("MessageTime DESC").limit(limit).execute();
     }
 
     @Override
     public int compareTo(SessionRecord o) {
         return getLatestMessage().compareTo(o.getLatestMessage());
+    }
+
+    public static String getOriginalSessionId(char sessionType, long sessionId){
+        return "" + sessionType + sessionId;
     }
 }

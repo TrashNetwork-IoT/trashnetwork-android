@@ -1,6 +1,7 @@
 package happyyoung.trashnetwork.ui.fragment.workgroup;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +18,7 @@ import happyyoung.trashnetwork.R;
 import happyyoung.trashnetwork.adapter.SessionMessageAdapter;
 import happyyoung.trashnetwork.database.model.SessionRecord;
 import happyyoung.trashnetwork.model.User;
+import happyyoung.trashnetwork.ui.activity.ChatActivity;
 import happyyoung.trashnetwork.util.DatabaseUtil;
 import happyyoung.trashnetwork.util.GlobalInfo;
 
@@ -58,7 +60,14 @@ public class MessageFragment extends Fragment {
         adapter = new SessionMessageAdapter(getContext(), sessionList, new SessionMessageAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position, SessionMessageAdapter.MessageItem item) {
-
+                switch (item.getSessionRecord().getSessionType()){
+                    case SessionRecord.SESSION_TYPE_GROUP:
+                    case SessionRecord.SESSION_TYPE_USER:
+                        Intent intent = new Intent(getContext(), ChatActivity.class);
+                        intent.putExtra(ChatActivity.BUNDLE_KEY_SESSION_TYPE, item.getSessionRecord().getSessionType());
+                        intent.putExtra(ChatActivity.BUNDLE_KEY_SESSION_ID, item.getSessionRecord().getSessionId());
+                        break;
+                }
             }
         });
         sessionListView.setAdapter(adapter);
