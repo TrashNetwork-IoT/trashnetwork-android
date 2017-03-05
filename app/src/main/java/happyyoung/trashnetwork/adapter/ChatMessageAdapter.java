@@ -84,7 +84,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     ((MessageViewHolder) holder).chatMessageView.addView(chatText);
                 }
                 if(((MessageViewHolder) holder).progressBar != null){
-                    if(messageItem.sending)
+                    if(messageItem.getMessage().getStatus() == ChatMessageRecord.MESSAGE_STATUS_SENDING)
                         ((MessageViewHolder) holder).progressBar.setVisibility(View.VISIBLE);
                     else
                         ((MessageViewHolder) holder).progressBar.setVisibility(View.GONE);
@@ -97,7 +97,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         ((MessageViewHolder) holder).senderNameText.setText(messageItem.sender.getName());
                     }
                 }
-                chatText.setText(messageItem.message.getContent());
+                chatText.setText(messageItem.message.getStrContent());
             }
         }
     }
@@ -133,17 +133,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         private int position;
         private User sender;
         private ChatMessageRecord message;
-        private boolean sending = false;
 
         public MessageItem(int position, User sender, ChatMessageRecord message) {
             this.position = position;
             this.sender = sender;
             this.message = message;
-        }
-
-        public MessageItem(int position, User sender, ChatMessageRecord message, boolean sending) {
-            this(position, sender, message);
-            this.sending = sending;
         }
 
         public ChatMessageRecord getMessage() {
@@ -156,14 +150,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         public int getPosition() {
             return position;
-        }
-
-        public boolean isSending() {
-            return sending;
-        }
-
-        public void setSending(boolean sending) {
-            this.sending = sending;
         }
     }
 }

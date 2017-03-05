@@ -17,6 +17,7 @@ import com.google.gson.JsonSerializer;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Type;
+import java.util.Date;
 
 /**
  * Created by shengyun-zhou <GGGZ-1101-28@Live.cn> on 2017-02-12
@@ -24,13 +25,25 @@ import java.lang.reflect.Type;
 public class GsonUtil {
     public static GsonBuilder getDefaultGsonBuilder(){
         return new GsonBuilder()
-                   .setDateFormat("yyyy-MM-dd HH:mm:ss")
+                   .registerTypeAdapter(Date.class, new DateTypeAdapter())
                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                    .registerTypeAdapter(Bitmap.class, new BitmapAdapter());
     }
     
     public static Gson getGson(){
         return getDefaultGsonBuilder().create();
+    }
+
+    private static class DateTypeAdapter implements JsonSerializer<Date>, JsonDeserializer<Date> {
+        @Override
+        public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
+            return new JsonPrimitive(src.getTime());
+        }
+
+        @Override
+        public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            return new Date(json.getAsLong());
+        }
     }
 
     private static class BitmapAdapter implements JsonSerializer<Bitmap>, JsonDeserializer<Bitmap>{

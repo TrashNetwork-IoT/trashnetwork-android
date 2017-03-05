@@ -1,9 +1,13 @@
 package happyyoung.trashnetwork.ui.activity;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -26,7 +30,6 @@ import happyyoung.trashnetwork.util.GlobalInfo;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
     private View mNavHeaderView;
 
     private MonitorFragment monitorFragment;
@@ -62,6 +65,7 @@ public class MainActivity extends AppCompatActivity
 
         onNavigationItemSelected(navView.getMenu().getItem(0));
     }
+
 
     @Override
     protected void onResume() {

@@ -45,6 +45,7 @@ dependencies {
             'com.github.nekocode:Badge:1.6.2',
             'com.github.bmelnychuk:atv:1.2.+',
             'com.microsoft.azure:notification-hubs-android-sdk:0.4@aar',
+            'org.eclipse.paho:org.eclipse.paho.client.mqttv3:+',
     )
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'

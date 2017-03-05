@@ -4,6 +4,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.google.gson.annotations.Expose;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,7 +15,7 @@ import java.util.List;
  */
 
 @Table(name = "SessionRecord")
-public class SessionRecord extends Model implements Comparable<SessionRecord> {
+public class SessionRecord extends Model implements Comparable<SessionRecord>, Serializable {
     public static final char SESSION_TYPE_UNKNOWN = 'U';
     public static final char SESSION_TYPE_GROUP = 'A';
     public static final char SESSION_TYPE_USER = 'B';
@@ -24,6 +25,7 @@ public class SessionRecord extends Model implements Comparable<SessionRecord> {
 
     @Column(name = "SessionId", notNull = true, uniqueGroups = {"OwnerUserId", "SessionId"},
             indexGroups = {"OwnerUserId", "SessionId"})
+    @Expose
     private String originalSessionId;
 
     @Column(name = "UnreadMessageCount")
@@ -82,12 +84,12 @@ public class SessionRecord extends Model implements Comparable<SessionRecord> {
     }
 
     public ChatMessageRecord getLatestMessage(){
-        return new Select().from(ChatMessageRecord.class).where("Session=?", this)
+        return new Select().from(ChatMessageRecord.class).where("Session=?", getId())
                 .orderBy("MessageTime DESC").limit(1).executeSingle();
     }
 
     public List<ChatMessageRecord> getMessages(Date endTime, int limit){
-        return new Select().from(ChatMessageRecord.class).where("Session=?", this)
+        return new Select().from(ChatMessageRecord.class).where("Session=?", getId())
                 .where("MessageTime<=?", endTime.getTime())
                 .orderBy("MessageTime DESC").limit(limit).execute();
     }
@@ -99,5 +101,17 @@ public class SessionRecord extends Model implements Comparable<SessionRecord> {
 
     public static String getOriginalSessionId(char sessionType, long sessionId){
         return "" + sessionType + sessionId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null)
+            return false;
+        if(obj instanceof SessionRecord){
+            if(originalSessionId.equals(((SessionRecord) obj).originalSessionId) &&
+                    ownerUserId == ((SessionRecord) obj).ownerUserId)
+                return true;
+        }
+        return false;
     }
 }

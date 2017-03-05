@@ -5,6 +5,7 @@ import com.activeandroid.query.Select;
 import java.util.Date;
 import java.util.List;
 
+import happyyoung.trashnetwork.database.model.ChatMessageRecord;
 import happyyoung.trashnetwork.database.model.LoginUserRecord;
 import happyyoung.trashnetwork.database.model.SessionRecord;
 import happyyoung.trashnetwork.model.User;
@@ -36,14 +37,24 @@ public class DatabaseUtil {
                 .executeSingle();
     }
 
-    public static List<SessionRecord> findAllSessionRecords(long userId){
-        return new Select().from(SessionRecord.class).where("OwnerUserId=?", userId)
+    public static List<SessionRecord> findAllSessionRecords(long ownerUserId){
+        return new Select().from(SessionRecord.class).where("OwnerUserId=?", ownerUserId)
                 .execute();
     }
 
-    public static SessionRecord findSessionRecord(long userId, char sessionType, long sessionId){
-        return new Select().from(SessionRecord.class).where("OwnerUserId=?", userId)
+    public static SessionRecord findSessionRecord(long ownerUserId, char sessionType, long sessionId){
+        return new Select().from(SessionRecord.class).where("OwnerUserId=?", ownerUserId)
                 .where("SessionId=?", SessionRecord.getOriginalSessionId(sessionType, sessionId))
+                .executeSingle();
+    }
+
+    public static SessionRecord findSessionRecordByDbId(long dbId){
+        return new Select().from(SessionRecord.class).where("Id=?", dbId)
+                .executeSingle();
+    }
+
+    public static ChatMessageRecord findChatMessageByDbId(long dbId){
+        return new Select().from(ChatMessageRecord.class).where("Id=?", dbId)
                 .executeSingle();
     }
 }

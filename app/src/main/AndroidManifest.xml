@@ -3,22 +3,15 @@
     package="happyyoung.trashnetwork">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="baidu.push.permission.WRITE_PUSHINFOPROVIDER.happyyoung.trashnetwork" />
-
-    <permission
-        android:name="baidu.push.permission.WRITE_PUSHINFOPROVIDER.happyyoung.trashnetwork"
-        android:protectionLevel="normal"></permission>
 
     <application
         android:name=".Application"
@@ -43,14 +36,8 @@
             android:name="TN_HTTP_API_BASE_URL_V1"
             android:value="http://happyyoung-pc.chinacloudapp.cn:23000/trashnetwork/v1/mobile" />
         <meta-data
-            android:name="BAIDU_PUSH_API_KEY"
-            android:value="qeZXMVv254SScxZXGw0xQNpB" />
-        <meta-data
-            android:name="AZURE_NOTIFICATION_HUB_NAME"
-            android:value="trashnetworknh" />
-        <meta-data
-            android:name="AZURE_NOTIFICATION_HUB_CONN_NAME"
-            android:value="Endpoint=sb://happyyoung.servicebus.chinacloudapi.cn/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=9IxVgy07gB4H0W9vJ0ZxzZ1WQBU2DXXsynT7WYpgKSg=" />
+            android:name="TN_MQTT_BROKER_URL"
+            android:value="tcp://happyyoung-pc.chinacloudapp.cn:23883"/>
 
         <activity android:name=".ui.activity.LoginActivity" />
         <activity
@@ -69,58 +56,19 @@
             android:name=".ui.activity.SettingsActivity"
             android:label="@string/action_settings" />
 
-        <!-- Baidu Push -->
-        <receiver
-            android:name="com.baidu.android.pushservice.PushServiceReceiver"
-            android:process=":bdservice_v1">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name="com.baidu.android.pushservice.action.notification.SHOW" />
-                <action android:name="com.baidu.android.pushservice.action.media.CLICK" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name="com.baidu.android.pushservice.RegistrationReceiver"
-            android:process=":bdservice_v1">
-            <intent-filter>
-                <action android:name="com.baidu.android.pushservice.action.METHOD" />
-                <action android:name="com.baidu.android.pushservice.action.BIND_SYNC" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+        <activity android:name=".ui.activity.ChatActivity"/>
 
-                <data android:scheme="package" />
+        <service android:name=".service.MqttService"
+            android:exported="false"/>
+        <receiver android:name=".receiver.ChatMessageReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="happyyoung.trashnetwork.action.CHAT_MESSAGE_RECEIVED"/>
+                <action android:name="happyyoung.trashnetwork.action.CHAT_MESSAGE_SENT" />
+                <category android:name="happyyoung.trashnetwork"/>
             </intent-filter>
         </receiver>
 
-        <service
-            android:name="com.baidu.android.pushservice.PushService"
-            android:exported="true"
-            android:process=":bdservice_v1">
-            <intent-filter>
-                <action android:name="com.baidu.android.pushservice.action.PUSH_SERVICE" />
-            </intent-filter>
-        </service>
-        <service
-            android:name="com.baidu.android.pushservice.CommandService"
-            android:exported="true" />
-
-        <provider
-            android:name="com.baidu.android.pushservice.PushInfoProvider"
-            android:authorities="happyyoung.trashnetwork.bdpush"
-            android:exported="true"
-            android:protectionLevel="signature"
-            android:writePermission="baidu.push.permission.WRITE_PUSHINFOPROVIDER.happyyoung.trashnetwork" />
-
-        <receiver android:name=".receiver.TestPushMessageReceiver">
-            <intent-filter>
-                <action android:name="com.baidu.android.pushservice.action.MESSAGE" />
-                <action android:name="com.baidu.android.pushservice.action.RECEIVE" />
-                <action android:name="com.baidu.android.pushservice.action.notification.CLICK" />
-            </intent-filter>
-        </receiver>
-
-        <activity android:name=".ui.activity.ChatActivity"></activity>
     </application>
 
 </manifest>

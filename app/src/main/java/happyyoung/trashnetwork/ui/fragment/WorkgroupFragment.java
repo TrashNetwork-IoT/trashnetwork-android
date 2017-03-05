@@ -1,9 +1,13 @@
 package happyyoung.trashnetwork.ui.fragment;
 
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,14 +19,16 @@ import android.view.ViewGroup;
 
 import com.android.volley.Request;
 
+import org.eclipse.paho.client.mqttv3.MqttException;
+
+import happyyoung.trashnetwork.Application;
 import happyyoung.trashnetwork.R;
-import happyyoung.trashnetwork.model.User;
 import happyyoung.trashnetwork.net.http.HttpApi;
 import happyyoung.trashnetwork.net.http.HttpApiJsonListener;
 import happyyoung.trashnetwork.net.http.HttpApiJsonRequest;
 import happyyoung.trashnetwork.net.model.result.Result;
 import happyyoung.trashnetwork.net.model.result.UserListResult;
-import happyyoung.trashnetwork.net.model.result.UserResult;
+import happyyoung.trashnetwork.service.MqttService;
 import happyyoung.trashnetwork.ui.fragment.workgroup.ContactFragment;
 import happyyoung.trashnetwork.ui.fragment.workgroup.MessageFragment;
 import happyyoung.trashnetwork.util.GlobalInfo;
@@ -34,6 +40,8 @@ public class WorkgroupFragment extends Fragment {
     private ContactFragment contactFragment;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+
+    private ServiceConnection mqttServConn;
 
     public WorkgroupFragment() {
         // Required empty public constructor
@@ -55,6 +63,28 @@ public class WorkgroupFragment extends Fragment {
                 finFlag = true;
                 showContent();
                 GlobalInfo.groupWorkers = data.getUserList();
+
+                Intent mqttIntent = new Intent(context, MqttService.class);
+                context.startService(mqttIntent);
+                mqttServConn = new ServiceConnection() {
+                    @Override
+                    public void onServiceConnected(ComponentName name, IBinder service) {
+                        try {
+                            ((MqttService.Binder) service).getService().addMQTTAction(new MqttService.MqttSubscriptionAction(
+                                    Application.MQTT_TOPIC_CHATTING, MqttService.TOPIC_TYPE_PRIVATE, GlobalInfo.user.getUserId(),
+                                    1, Application.ACTION_CHAT_MESSAGE_RECEIVED
+                            ));
+                            ((MqttService.Binder) service).getService().startWork(GlobalInfo.user.getUserId(),
+                                    GlobalInfo.token);
+                        }catch (MqttException me){
+                            me.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onServiceDisconnected(ComponentName name) {}
+                };
+                context.bindService(mqttIntent, mqttServConn, Context.BIND_AUTO_CREATE);
             }
 
             @Override
@@ -140,4 +170,9 @@ public class WorkgroupFragment extends Fragment {
         rootView.findViewById(R.id.view_workgroup).setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void onDestroy() {
+        getContext().unbindService(mqttServConn);
+        super.onDestroy();
+    }
 }

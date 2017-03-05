@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.util.Date;
 import java.util.List;
 
 import cn.nekocode.badge.BadgeDrawable;
@@ -50,20 +49,20 @@ public class SessionMessageAdapter extends RecyclerView.Adapter<SessionMessageAd
     @Override
     public void onBindViewHolder(SessionMessageViewHolder holder, final int position) {
         final MessageItem messageItem = sessionList.get(position);
-        if(messageItem.sending)
+        holder.portrait.setImageBitmap(messageItem.portrait);
+        holder.username.setText(messageItem.displayName);
+        ChatMessageRecord cmr = messageItem.session.getLatestMessage();
+        holder.sessionTime.setText(DateTimeUtil.convertTimestamp(context, cmr.getMessageTime(), true, true));
+        holder.sessionMsg.setText(cmr.getLiteralContent());
+        if(cmr.getStatus() == ChatMessageRecord.MESSAGE_STATUS_SENDING)
             holder.sendingProgress.setVisibility(View.VISIBLE);
         else
             holder.sendingProgress.setVisibility(View.GONE);
-        holder.portrait.setImageBitmap(messageItem.portrait);
-        holder.username.setText(messageItem.displayName);
-        ChatMessageRecord cmr = messageItem.sessionRecord.getLatestMessage();
-        holder.sessionTime.setText(DateTimeUtil.convertTimestamp(context, cmr.getMessageTime(), true, true));
-        holder.sessionMsg.setText(cmr.getLiteralContent());
-        if(messageItem.sessionRecord.getUnreadMessageCount() > 0) {
+        if(messageItem.session.getUnreadMessageCount() > 0) {
             BadgeDrawable badgeDrawable = new BadgeDrawable.Builder()
                     .type(BadgeDrawable.TYPE_ONLY_ONE_TEXT)
                     .badgeColor(context.getResources().getColor(R.color.red_500))
-                    .text1(String.valueOf(messageItem.sessionRecord.getUnreadMessageCount()))
+                    .text1(String.valueOf(messageItem.session.getUnreadMessageCount()))
                     .textSize(context.getResources().getDimension(R.dimen.small_text_size))
                     .build();
             holder.badge.setImageDrawable(badgeDrawable);
@@ -107,18 +106,14 @@ public class SessionMessageAdapter extends RecyclerView.Adapter<SessionMessageAd
     public static class MessageItem implements Comparable<MessageItem> {
         private Bitmap portrait;
         private String displayName;
-        private SessionRecord sessionRecord;
-        private boolean sending = false;
+        private SessionRecord session;
 
-        public MessageItem(Bitmap portrait, String displayName, SessionRecord sessionRecord, boolean sending) {
-            this(portrait, displayName, sessionRecord);
-            this.sending = sending;
-        }
+        public MessageItem(){}
 
-        public MessageItem(Bitmap portrait, String displayName, SessionRecord sessionRecord) {
+        public MessageItem(Bitmap portrait, String displayName, SessionRecord session) {
             this.portrait = portrait;
             this.displayName = displayName;
-            this.sessionRecord = sessionRecord;
+            this.session = session;
         }
 
         public Bitmap getPortrait() {
@@ -129,21 +124,25 @@ public class SessionMessageAdapter extends RecyclerView.Adapter<SessionMessageAd
             this.portrait = portrait;
         }
 
-        public SessionRecord getSessionRecord() {
-            return sessionRecord;
+        public SessionRecord getSession() {
+            return session;
         }
 
-        public boolean isSending() {
-            return sending;
+        public void setSession(SessionRecord session) {
+            this.session = session;
         }
 
-        public void setSending(boolean sending) {
-            this.sending = sending;
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public void setDisplayName(String displayName) {
+            this.displayName = displayName;
         }
 
         @Override
         public int compareTo(MessageItem o) {
-            return sessionRecord.compareTo(o.sessionRecord);
+            return session.compareTo(o.session);
         }
     }
 }
