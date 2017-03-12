@@ -8,6 +8,7 @@ import java.util.List;
 
 import happyyoung.trashnetwork.database.model.SessionRecord;
 import happyyoung.trashnetwork.model.User;
+import happyyoung.trashnetwork.service.LocationService;
 import happyyoung.trashnetwork.service.MqttService;
 
 /**
@@ -20,11 +21,15 @@ public class GlobalInfo {
     public static SessionRecord currentSession;
 
     public static void logout(Context context){
+        Intent mqttIntent = new Intent(context, MqttService.class);
+        context.stopService(mqttIntent);
+        if(user.getAccountType() == User.ACCOUNT_TYPE_CLEANER){
+            Intent locationIntent = new Intent(context, LocationService.class);
+            context.stopService(locationIntent);
+        }
         token = null;
         user = null;
         groupWorkers.clear();
-        Intent mqttIntent = new Intent(context, MqttService.class);
-        context.stopService(mqttIntent);
     }
 
     public static User findUserById(long userId){

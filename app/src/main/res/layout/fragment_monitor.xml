@@ -2,12 +2,244 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="happyyoung.trashnetwork.ui.fragment.MonitorFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/bmapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/action_monitor" />
+        android:clickable="true"/>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/user_location_area"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/item_padding"
+        android:alpha="0.9"
+        android:clickable="true"
+        android:background="@android:color/white"
+        android:foreground="?attr/selectableItemBackground"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/item_padding"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/item_padding"
+                android:tint="@color/red_500"
+                app:srcCompat="@drawable/ic_location_32dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:text="@string/your_location"
+                        android:textSize="@dimen/small_text_size" />
+
+                    <TextView android:id="@+id/txt_user_update_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        android:textSize="@dimen/smaller_text_size"
+                        android:maxLines="1"/>
+
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/txt_user_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/unknown_location"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/normal_text_size"/>
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cleaner_location_area"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/item_padding"
+        android:alpha="0.9"
+        android:clickable="true"
+        android:background="@android:color/white"
+        android:foreground="?attr/selectableItemBackground"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/item_padding">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/cleaner_portrait"
+                android:layout_width="@dimen/large_icon_size"
+                android:layout_height="@dimen/large_icon_size"
+                android:layout_centerVertical="true"
+                app:civ_border_width="1dp"
+                app:civ_fill_color="@color/grey_200"
+                app:civ_border_color="@color/grey_200"
+                android:layout_marginEnd="@dimen/item_padding"
+                android:src="@mipmap/ic_launcher"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/cleaner_portrait">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView android:id="@+id/txt_cleaner_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@+id/txt_cleaner_update_time"
+                        android:layout_marginEnd="@dimen/item_padding"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="@string/cleaners"
+                        android:textSize="@dimen/normal_text_size"
+                        android:textColor="@android:color/black"/>
+
+                    <TextView android:id="@+id/txt_cleaner_update_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:textSize="@dimen/smaller_text_size"
+                        android:maxLines="1"/>
+
+                    <TextView android:id="@+id/txt_cleaner_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:textSize="@dimen/small_text_size"
+                        android:text="@string/unknown_location"
+                        android:layout_below="@+id/txt_cleaner_name"/>
+                </RelativeLayout>
+            </LinearLayout>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/trash_view_area"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/item_padding"
+        android:alpha="0.9"
+        android:clickable="true"
+        android:background="@android:color/white"
+        android:foreground="?attr/selectableItemBackground"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/item_padding"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView android:id="@+id/icon_trash"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="@dimen/item_padding"
+                    app:srcCompat="@drawable/ic_delete_32dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView android:id="@+id/txt_trash_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:text="Trash #1"
+                            android:textSize="@dimen/normal_text_size"
+                            android:textColor="@android:color/black"/>
+
+                        <TextView android:id="@+id/txt_trash_update_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:textSize="@dimen/smaller_text_size"
+                            android:maxLines="1"/>
+
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/txt_trash_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/unknown_location"
+                        android:textSize="@dimen/small_text_size"/>
+
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:background="@color/grey_300" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:text="@string/capacity"
+                    android:textSize="@dimen/normal_text_size"
+                    android:textColor="@android:color/black"/>
+
+                <TextView android:id="@+id/txt_trash_capacity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="20%"
+                    android:textColor="@color/green_500"
+                    android:textSize="@dimen/normal_text_size"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 
 </RelativeLayout>

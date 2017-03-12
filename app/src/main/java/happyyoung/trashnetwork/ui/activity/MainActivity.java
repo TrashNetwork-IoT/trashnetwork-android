@@ -1,15 +1,19 @@
 package happyyoung.trashnetwork.ui.activity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -23,6 +27,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import happyyoung.trashnetwork.R;
+import happyyoung.trashnetwork.model.User;
+import happyyoung.trashnetwork.service.LocationService;
 import happyyoung.trashnetwork.ui.fragment.MonitorFragment;
 import happyyoung.trashnetwork.ui.fragment.WorkgroupFragment;
 import happyyoung.trashnetwork.util.DatabaseUtil;
@@ -62,10 +68,24 @@ public class MainActivity extends AppCompatActivity
         transaction.add(R.id.main_container, monitorFragment)
                    .add(R.id.main_container, workgroupFragment)
                    .commit();
-
         onNavigationItemSelected(navView.getMenu().getItem(0));
+
+        if(GlobalInfo.user.getAccountType() == User.ACCOUNT_TYPE_CLEANER){
+            checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+            checkPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+            startService(new Intent(this, LocationService.class));
+        }
+        checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
+    private void checkPermission(String permission){
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                return;
+            }
+            ActivityCompat.requestPermissions(this, new String[]{permission}, 0);
+        }
+    }
 
     @Override
     protected void onResume() {

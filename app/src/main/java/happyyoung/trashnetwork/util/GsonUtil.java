@@ -23,15 +23,18 @@ import java.util.Date;
  * Created by shengyun-zhou <GGGZ-1101-28@Live.cn> on 2017-02-12
  */
 public class GsonUtil {
+    private static final GsonBuilder defaultBuilder = new GsonBuilder()
+            .registerTypeAdapter(Date.class, new DateTypeAdapter())
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .registerTypeAdapter(Bitmap.class, new BitmapAdapter());
+    private static final Gson defaultGson = defaultBuilder.create();
+
     public static GsonBuilder getDefaultGsonBuilder(){
-        return new GsonBuilder()
-                   .registerTypeAdapter(Date.class, new DateTypeAdapter())
-                   .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                   .registerTypeAdapter(Bitmap.class, new BitmapAdapter());
+        return defaultBuilder;
     }
     
     public static Gson getGson(){
-        return getDefaultGsonBuilder().create();
+        return defaultGson;
     }
 
     private static class DateTypeAdapter implements JsonSerializer<Date>, JsonDeserializer<Date> {

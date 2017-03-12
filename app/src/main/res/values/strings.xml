@@ -40,4 +40,8 @@
     <string name="managers">Managers</string>
     <string name="groups">Groups</string>
 
+    <string name="your_location">Your location</string>
+    <string name="unknown_location">Unknown location</string>
+    <string name="capacity">Capacity</string>
+
 </resources>

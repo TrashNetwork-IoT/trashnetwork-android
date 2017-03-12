@@ -54,4 +54,12 @@ public class User {
     public Bitmap getPortrait() {
         return portrait;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof User){
+            return userId.equals(((User) obj).userId);
+        }
+        return false;
+    }
 }

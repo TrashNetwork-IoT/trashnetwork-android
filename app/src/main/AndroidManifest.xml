@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".Application"
@@ -34,10 +34,13 @@
             android:value="happyyoung.trashnetwork.database.serializer.BitmapSerializer" />
         <meta-data
             android:name="TN_HTTP_API_BASE_URL_V1"
-            android:value="http://happyyoung-pc.chinacloudapp.cn:23000/trashnetwork/v1/mobile" />
+            android:value="@string/TN_HTTP_API_BASE_URL_V1" />
         <meta-data
             android:name="TN_MQTT_BROKER_URL"
-            android:value="tcp://happyyoung-pc.chinacloudapp.cn:23883"/>
+            android:value="@string/TN_MQTT_BROKER_URL"/>
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="@string/BAIDU_LBS_API_KEY"/>
 
         <activity android:name=".ui.activity.LoginActivity" />
         <activity
@@ -45,7 +48,6 @@
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -65,9 +67,15 @@
             <intent-filter>
                 <action android:name="happyyoung.trashnetwork.action.CHAT_MESSAGE_RECEIVED"/>
                 <action android:name="happyyoung.trashnetwork.action.CHAT_MESSAGE_SENT" />
-                <category android:name="happyyoung.trashnetwork"/>
+                <category android:name="${applicationId}"/>
             </intent-filter>
         </receiver>
+
+        <service android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":bdmap"/>
+        <service android:name=".service.LocationService"
+            android:exported="false"/>
 
     </application>
 

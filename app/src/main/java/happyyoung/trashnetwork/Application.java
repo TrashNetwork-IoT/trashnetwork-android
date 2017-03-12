@@ -3,6 +3,8 @@ package happyyoung.trashnetwork;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
+import com.baidu.mapapi.SDKInitializer;
+
 import happyyoung.trashnetwork.net.http.HttpApi;
 import happyyoung.trashnetwork.service.MqttService;
 
@@ -12,6 +14,7 @@ import happyyoung.trashnetwork.service.MqttService;
 public class Application extends com.activeandroid.app.Application {
     public static final String BUNDLE_KEY_CHAT_MSG_DB_ID = "MessageDBID";
     public static final String BUNDLE_KEY_SESSION_DB_ID = "SessionDBID";
+    public static final String BUNDLE_KEY_USER_LOCATION_DATA = "UserLocationData";
 
     public static String ACTION_CHAT_MESSAGE_SENT;
     public static String ACTION_CHAT_MESSAGE_SENT_SAVED;
@@ -19,15 +22,14 @@ public class Application extends com.activeandroid.app.Application {
     public static String ACTION_CHAT_MESSAGE_SEND_START;
     public static String ACTION_CHAT_MESSAGE_RECEIVED_SAVED;
     public static String ACTION_SESSION_UPDATE;
+    public static String ACTION_LOCATION;
 
     public static String MQTT_TOPIC_CHATTING = "Chatting";
-
-    public static final String PUSH_TAG_USER_PREFIX = "TagUser";
-    public static final String PUSH_TAG_GROUP_PREFIX = "TagGroup";
 
     @Override
     public void onCreate() {
         super.onCreate();
+        SDKInitializer.initialize(getApplicationContext());
         try {
             ApplicationInfo appInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
             HttpApi.BASE_URL_V1 = appInfo.metaData.getString("TN_HTTP_API_BASE_URL_V1");
@@ -42,6 +44,6 @@ public class Application extends com.activeandroid.app.Application {
         ACTION_CHAT_MESSAGE_SEND_START = getPackageName() + ".action.CHAT_MESSAGE_SEND_START";
         ACTION_CHAT_MESSAGE_RECEIVED_SAVED = getPackageName() + ".action.CHAT_MESSAGE_RECEIVED_SAVED";
         ACTION_SESSION_UPDATE = getPackageName() + ".action.SESSION_UPDATE";
+        ACTION_LOCATION = getPackageName() + ".action.LOCATION_DETECTED";
     }
-
 }

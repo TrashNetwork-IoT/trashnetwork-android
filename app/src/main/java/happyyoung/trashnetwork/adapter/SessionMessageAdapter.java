@@ -39,9 +39,9 @@ public class SessionMessageAdapter extends RecyclerView.Adapter<SessionMessageAd
         SessionMessageViewHolder holder = new SessionMessageViewHolder(LayoutInflater.from(context).inflate(R.layout.item_session_message, parent, false));
         holder.portrait = (ImageView) holder.itemView.findViewById(R.id.session_portrait);
         holder.sendingProgress = (ProgressBar) holder.itemView.findViewById(R.id.chat_send_progress);
-        holder.sessionTime = (TextView) holder.itemView.findViewById(R.id.session_time);
+        holder.sessionTime = (TextView) holder.itemView.findViewById(R.id.txt_cleaner_update_time);
         holder.sessionMsg = (TextView) holder.itemView.findViewById(R.id.session_msg);
-        holder.username = (TextView) holder.itemView.findViewById(R.id.session_displayname);
+        holder.username = (TextView) holder.itemView.findViewById(R.id.txt_cleaner_name);
         holder.badge = (ImageView) holder.itemView.findViewById(R.id.session_badge);
         return holder;
     }
