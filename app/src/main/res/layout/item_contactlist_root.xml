@@ -21,17 +21,17 @@
         android:layout_marginBottom="@dimen/item_padding"
         android:tint="@color/colorAccent" />
 
-    <TextView android:id="@+id/item_text"
+    <TextView android:id="@+id/txt_contactlist_name"
         android:layout_centerVertical="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/normal_text_size"
         android:textColor="@android:color/black"
         android:layout_margin="@dimen/item_padding"
-        android:layout_toStartOf="@+id/item_num_text"
+        android:layout_toStartOf="@+id/txt_contactlist_size"
         android:layout_toEndOf="@+id/item_icon"/>
 
-    <TextView android:id="@+id/item_num_text"
+    <TextView android:id="@+id/txt_contactlist_size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"

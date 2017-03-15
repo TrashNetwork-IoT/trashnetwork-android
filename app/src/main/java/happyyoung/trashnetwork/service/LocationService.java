@@ -67,6 +67,7 @@ public class LocationService extends Service implements BDLocationListener {
         if(GlobalInfo.user == null)
             return;
         UserLocation newLocation = new UserLocation(GlobalInfo.user.getUserId(), longitude, latitude);
+        GlobalInfo.currentLocation = newLocation;
         Intent intent = new Intent(Application.ACTION_LOCATION);
         intent.addCategory(getPackageName());
         intent.putExtra(Application.BUNDLE_KEY_USER_LOCATION_DATA, GsonUtil.getGson().toJson(newLocation));

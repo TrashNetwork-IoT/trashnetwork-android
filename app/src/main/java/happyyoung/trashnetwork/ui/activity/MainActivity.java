@@ -15,6 +15,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -26,6 +28,11 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import happyyoung.trashnetwork.Application;
 import happyyoung.trashnetwork.R;
 import happyyoung.trashnetwork.model.User;
 import happyyoung.trashnetwork.service.LocationService;
@@ -36,6 +43,8 @@ import happyyoung.trashnetwork.util.GlobalInfo;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    @BindView(R.id.toolbar_main) Toolbar toolbar;
+    @BindView(R.id.nav_main) NavigationView navView;
     private View mNavHeaderView;
 
     private MonitorFragment monitorFragment;
@@ -47,7 +56,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -56,7 +65,6 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navView = (NavigationView) findViewById(R.id.nav_main);
         navView.setNavigationItemSelectedListener(this);
         mNavHeaderView = navView.getHeaderView(0);
         updateUserInfo();
@@ -71,20 +79,11 @@ public class MainActivity extends AppCompatActivity
         onNavigationItemSelected(navView.getMenu().getItem(0));
 
         if(GlobalInfo.user.getAccountType() == User.ACCOUNT_TYPE_CLEANER){
-            checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
-            checkPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+            Application.checkPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
+            Application.checkPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
             startService(new Intent(this, LocationService.class));
         }
-        checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    }
-
-    private void checkPermission(String permission){
-        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
-                return;
-            }
-            ActivityCompat.requestPermissions(this, new String[]{permission}, 0);
-        }
+        Application.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
     @Override
@@ -130,6 +129,9 @@ public class MainActivity extends AppCompatActivity
                 ft.commit();
                 setTitle(getString(R.string.action_work_group));
                 break;
+            case R.id.nav_scan_qrcode:
+                scanQRCode();
+                break;
             case R.id.nav_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
@@ -156,5 +158,28 @@ public class MainActivity extends AppCompatActivity
     private void hideAllFragment(FragmentTransaction ft){
         ft.hide(monitorFragment);
         ft.hide(workgroupFragment);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_main_scan:
+                scanQRCode();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void scanQRCode(){
+        new IntentIntegrator(this)
+                .setOrientationLocked(false)
+                .setCaptureActivity(ScanQRCodeActivity.class)
+                .initiateScan();
     }
 }

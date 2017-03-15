@@ -11,7 +11,8 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:name=".Application"
@@ -37,10 +38,10 @@
             android:value="@string/TN_HTTP_API_BASE_URL_V1" />
         <meta-data
             android:name="TN_MQTT_BROKER_URL"
-            android:value="@string/TN_MQTT_BROKER_URL"/>
+            android:value="@string/TN_MQTT_BROKER_URL" />
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="@string/BAIDU_LBS_API_KEY"/>
+            android:value="@string/BAIDU_LBS_API_KEY" />
 
         <activity android:name=".ui.activity.LoginActivity" />
         <activity
@@ -48,6 +49,7 @@
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -57,26 +59,33 @@
         <activity
             android:name=".ui.activity.SettingsActivity"
             android:label="@string/action_settings" />
+        <activity android:name=".ui.activity.ChatActivity" />
 
-        <activity android:name=".ui.activity.ChatActivity"/>
+        <service
+            android:name=".service.MqttService"
+            android:exported="false" />
 
-        <service android:name=".service.MqttService"
-            android:exported="false"/>
-        <receiver android:name=".receiver.ChatMessageReceiver"
+        <receiver
+            android:name=".receiver.ChatMessageReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="happyyoung.trashnetwork.action.CHAT_MESSAGE_RECEIVED"/>
+                <action android:name="happyyoung.trashnetwork.action.CHAT_MESSAGE_RECEIVED" />
                 <action android:name="happyyoung.trashnetwork.action.CHAT_MESSAGE_SENT" />
-                <category android:name="${applicationId}"/>
+
+                <category android:name="${applicationId}" />
             </intent-filter>
         </receiver>
 
-        <service android:name="com.baidu.location.f"
+        <service
+            android:name="com.baidu.location.f"
             android:enabled="true"
-            android:process=":bdmap"/>
-        <service android:name=".service.LocationService"
-            android:exported="false"/>
+            android:process=":bdmap" />
+        <service
+            android:name=".service.LocationService"
+            android:exported="false" />
 
+        <activity android:name=".ui.activity.ScanQRCodeActivity"
+            android:label="@string/action_scan_qr_code"/>
     </application>
 
 </manifest>

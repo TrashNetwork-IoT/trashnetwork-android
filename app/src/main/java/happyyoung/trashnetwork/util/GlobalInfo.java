@@ -8,6 +8,7 @@ import java.util.List;
 
 import happyyoung.trashnetwork.database.model.SessionRecord;
 import happyyoung.trashnetwork.model.User;
+import happyyoung.trashnetwork.model.UserLocation;
 import happyyoung.trashnetwork.service.LocationService;
 import happyyoung.trashnetwork.service.MqttService;
 
@@ -19,6 +20,7 @@ public class GlobalInfo {
     public static User user;
     public static List<User> groupWorkers = new ArrayList<>();
     public static SessionRecord currentSession;
+    public static UserLocation currentLocation;
 
     public static void logout(Context context){
         Intent mqttIntent = new Intent(context, MqttService.class);
@@ -29,6 +31,7 @@ public class GlobalInfo {
         }
         token = null;
         user = null;
+        currentLocation = null;
         groupWorkers.clear();
     }
 

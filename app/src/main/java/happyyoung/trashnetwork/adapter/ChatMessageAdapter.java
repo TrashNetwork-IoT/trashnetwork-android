@@ -2,6 +2,7 @@ package happyyoung.trashnetwork.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import happyyoung.trashnetwork.R;
 import happyyoung.trashnetwork.database.model.ChatMessageRecord;
 import happyyoung.trashnetwork.model.User;
@@ -107,22 +110,16 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return messageList.size();
     }
 
-    private class MessageViewHolder extends RecyclerView.ViewHolder{
-        private View itemView;
-        private ImageView senderPortrait;
-        private ViewGroup chatMessageView;
-        private TextView messageTimeText;
-        private TextView senderNameText;
-        private ProgressBar progressBar;
+    class MessageViewHolder extends RecyclerView.ViewHolder{
+        @BindView(R.id.chat_sender_portrait) ImageView senderPortrait;
+        @BindView(R.id.chat_chatbox_view) ViewGroup chatMessageView;
+        @BindView(R.id.chat_msg_time) TextView messageTimeText;
+        @Nullable @BindView(R.id.chat_sender_name) TextView senderNameText;
+        @Nullable @BindView(R.id.chat_send_progress) ProgressBar progressBar;
 
         public MessageViewHolder(View itemView) {
             super(itemView);
-            this.itemView = itemView;
-            senderPortrait = (ImageView) itemView.findViewById(R.id.chat_sender_portrait);
-            chatMessageView = (ViewGroup) itemView.findViewById(R.id.chat_chatbox_view);
-            messageTimeText = (TextView) itemView.findViewById(R.id.chat_msg_time);
-            progressBar = (ProgressBar) itemView.findViewById(R.id.chat_send_progress);
-            senderNameText = (TextView) itemView.findViewById(R.id.chat_sender_name);
+            ButterKnife.bind(this, itemView);
         }
     }
 

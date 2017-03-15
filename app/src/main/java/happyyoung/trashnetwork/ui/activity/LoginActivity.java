@@ -2,7 +2,6 @@ package happyyoung.trashnetwork.ui.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
@@ -26,6 +25,11 @@ import com.android.volley.Request;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnEditorAction;
+import butterknife.OnTextChanged;
 import happyyoung.trashnetwork.R;
 import happyyoung.trashnetwork.database.model.LoginUserRecord;
 import happyyoung.trashnetwork.net.PublicResultCode;
@@ -46,21 +50,22 @@ public class LoginActivity extends AppCompatActivity {
     public static final String BUNDLE_KEY_AUTO_USER_ID = "AutoUserId";
 
     // UI references.
-    private AutoCompleteTextView mIdView;
-    private EditText mPasswordView;
-    private ProgressBar mProgress;
-    private Button mSignInButton;
+    @BindView(R.id.login_id) AutoCompleteTextView mIdView;
+    @BindView(R.id.login_password) EditText mPasswordView;
+    @BindView(R.id.login_progress) ProgressBar mProgress;
+    @BindView(R.id.login_portrait) ImageView mPortraitView;
+    @BindView(R.id.btn_sign_in) Button mSignInButton;
+
+    private List<LoginUserRecord> loginRecords;
 
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        ButterKnife.bind(this);
 
-        mProgress = (ProgressBar) findViewById(R.id.login_progress);
-        mIdView = (AutoCompleteTextView) findViewById(R.id.login_id);
-        final ImageView mPortraitView = (ImageView) findViewById(R.id.login_portrait);
-        final List<LoginUserRecord> loginRecords = DatabaseUtil.findAllLoginUserRecords(10);
+        loginRecords = DatabaseUtil.findAllLoginUserRecords(10);
         List<String> loginIdRecords = new ArrayList<>();
         for(LoginUserRecord lur : loginRecords)
             loginIdRecords.add(Long.toString(lur.getUserId()));
@@ -91,26 +96,36 @@ public class LoginActivity extends AppCompatActivity {
         long autoId = getIntent().getLongExtra(BUNDLE_KEY_AUTO_USER_ID, -1);
         if(autoId > 0)
             mIdView.setText(Long.toString(autoId));
+    }
 
-        mPasswordView = (EditText) findViewById(R.id.login_password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if(id == EditorInfo.IME_ACTION_DONE) {
-                    attemptLogin();
-                    return true;
+    @OnTextChanged(value = R.id.login_id, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
+    void onIdTextChanged(Editable s) {
+        try{
+            if(!s.toString().isEmpty()) {
+                long idNum = Long.valueOf(s.toString());
+                for (LoginUserRecord lur : loginRecords) {
+                    if (lur.getUserId() == idNum) {
+                        mPortraitView.setImageBitmap(lur.getPortrait());
+                        return;
+                    }
                 }
-                return false;
             }
-        });
+        }catch (NumberFormatException ignored){}
+        mPortraitView.setImageResource(R.mipmap.ic_launcher);
+    }
 
-        mSignInButton = (Button) findViewById(R.id.button_sign_in);
-        mSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
+    @OnEditorAction(R.id.login_password)
+    boolean onPasswordEditAction(TextView textView, int id, KeyEvent keyEvent){
+        if(id == EditorInfo.IME_ACTION_DONE) {
+            attemptLogin();
+            return true;
+        }
+        return false;
+    }
+
+    @OnClick(R.id.btn_sign_in)
+    void onBtnSignInClick(View v){
+        attemptLogin();
     }
 
     private void attemptLogin(){

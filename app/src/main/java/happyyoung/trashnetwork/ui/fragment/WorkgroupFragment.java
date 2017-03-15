@@ -16,11 +16,14 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.android.volley.Request;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import happyyoung.trashnetwork.Application;
 import happyyoung.trashnetwork.R;
 import happyyoung.trashnetwork.net.http.HttpApi;
@@ -38,8 +41,10 @@ public class WorkgroupFragment extends Fragment {
     private View rootView;
     private MessageFragment messageFragment;
     private ContactFragment contactFragment;
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
+    @BindView(R.id.tab_workgroup) TabLayout tabLayout;
+    @BindView(R.id.tab_viewpager_workgroup) ViewPager viewPager;
+    @BindView(R.id.workgroup_progress) ProgressBar viewProgress;
+    @BindView(R.id.view_workgroup) View viewWorkgroup;
 
     private ServiceConnection mqttServConn;
 
@@ -116,12 +121,13 @@ public class WorkgroupFragment extends Fragment {
         // Inflate the layout for this fragment
         if(rootView == null)
             rootView = inflater.inflate(R.layout.fragment_workgroup, container, false);
+        ButterKnife.bind(this, rootView);
+
         if(messageFragment == null)
             messageFragment = MessageFragment.newInstance(getContext());
         if(contactFragment == null)
             contactFragment = ContactFragment.newInstance(getContext());
-        tabLayout = (TabLayout) rootView.findViewById(R.id.tab_workgroup);
-        viewPager = (ViewPager) rootView.findViewById(R.id.tab_viewpager_workgroup);
+
         if(finFlag)
             showContent();
 
@@ -162,12 +168,12 @@ public class WorkgroupFragment extends Fragment {
     }
 
     private void showContent(){
-        if(rootView == null || rootView.findViewById(R.id.view_workgroup).getVisibility() == View.VISIBLE)
+        if(rootView == null || viewWorkgroup.getVisibility() == View.VISIBLE)
             return;
         viewPager.setAdapter(new WorkgroupPagerAdapter(getFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
-        rootView.findViewById(R.id.workgroup_progress).setVisibility(View.GONE);
-        rootView.findViewById(R.id.view_workgroup).setVisibility(View.VISIBLE);
+        viewProgress.setVisibility(View.GONE);
+        viewWorkgroup.setVisibility(View.VISIBLE);
     }
 
     @Override

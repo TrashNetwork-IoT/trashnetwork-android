@@ -1,7 +1,10 @@
 package happyyoung.trashnetwork;
 
+import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 
 import com.baidu.mapapi.SDKInitializer;
 
@@ -45,5 +48,14 @@ public class Application extends com.activeandroid.app.Application {
         ACTION_CHAT_MESSAGE_RECEIVED_SAVED = getPackageName() + ".action.CHAT_MESSAGE_RECEIVED_SAVED";
         ACTION_SESSION_UPDATE = getPackageName() + ".action.SESSION_UPDATE";
         ACTION_LOCATION = getPackageName() + ".action.LOCATION_DETECTED";
+    }
+
+    public static void checkPermission(Activity activity, String permission){
+        if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
+                return;
+            }
+            ActivityCompat.requestPermissions(activity, new String[]{permission}, 0);
+        }
     }
 }

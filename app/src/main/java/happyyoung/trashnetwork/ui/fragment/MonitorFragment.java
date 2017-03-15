@@ -27,6 +27,8 @@ import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import happyyoung.trashnetwork.Application;
 import happyyoung.trashnetwork.R;
 import happyyoung.trashnetwork.model.UserLocation;
@@ -38,29 +40,28 @@ import happyyoung.trashnetwork.util.ImageUtil;
 public class MonitorFragment extends Fragment {
     private static final String LOG_TAG_GEO_CODER = "GeoCoder";
 
-    private View rootView;
-    private MapView mMapView;
     private BaiduMap baiduMap;
-
     private boolean mapCenterFlag = false;
-    private View userLocationView;
-    private TextView txtUserLocation;
-    private TextView txtUserUpdateTime;
 
-    private View cleanerLocationView;
-    private ImageView cleanerPortrait;
-    private TextView txtCleanerName;
-    private TextView txtCleanerLocation;
-    private TextView txtCleanerUpdateTime;
+    private View rootView;
+    @BindView(R.id.bmap_view) MapView mMapView;
+    @BindView(R.id.user_location_area) View userLocationView;
+    @BindView(R.id.txt_user_location) TextView txtUserLocation;
+    @BindView(R.id.txt_user_update_time) TextView txtUserUpdateTime;
 
-    private View trashLocationView;
-    private ImageView iconTrash;
-    private TextView txtTrashName;
-    private TextView txtTrashLocation;
-    private TextView txtTrashUpdateTime;
-    private TextView txtTrashCapacity;
+    @BindView(R.id.cleaner_location_area) View cleanerLocationView;
+    @BindView(R.id.cleaner_portrait) ImageView cleanerPortrait;
+    @BindView(R.id.txt_cleaner_name) TextView txtCleanerName;
+    @BindView(R.id.txt_cleaner_location) TextView txtCleanerLocation;
+    @BindView(R.id.txt_cleaner_update_time) TextView txtCleanerUpdateTime;
 
-    private UserLocation currentLocation;
+    @BindView(R.id.trash_view_area) View trashMonitorView;
+    @BindView(R.id.icon_trash) ImageView iconTrash;
+    @BindView(R.id.txt_trash_name) TextView txtTrashName;
+    @BindView(R.id.txt_trash_location) TextView txtTrashLocation;
+    @BindView(R.id.txt_trash_cleaned_time) TextView txtTrashCleanedTime;
+    @BindView(R.id.trash_cleaner_portrait) ImageView trashCleanerPortrait;
+
     private MarkerOptions userMarkerOptions;
     private Marker userMarker;
     private GeoCoder userLocationGeoCoder;
@@ -82,27 +83,10 @@ public class MonitorFragment extends Fragment {
         if(rootView != null)
             return rootView;
         rootView = inflater.inflate(R.layout.fragment_monitor, container, false);
-        mMapView = (MapView) rootView.findViewById(R.id.bmapView);
+        ButterKnife.bind(this, rootView);
 
         baiduMap = mMapView.getMap();
         baiduMap.setMapStatus(MapStatusUpdateFactory.zoomTo(18));
-
-        userLocationView = rootView.findViewById(R.id.user_location_area);
-        txtUserLocation = (TextView) rootView.findViewById(R.id.txt_user_location);
-        txtUserUpdateTime = (TextView) rootView.findViewById(R.id.txt_user_update_time);
-
-        cleanerLocationView = rootView.findViewById(R.id.cleaner_location_area);
-        cleanerPortrait = (ImageView) rootView.findViewById(R.id.cleaner_portrait);
-        txtCleanerName = (TextView) rootView.findViewById(R.id.txt_cleaner_name);
-        txtCleanerUpdateTime = (TextView) rootView.findViewById(R.id.txt_cleaner_update_time);
-        txtCleanerLocation = (TextView) rootView.findViewById(R.id.txt_cleaner_location);
-
-        trashLocationView = rootView.findViewById(R.id.trash_view_area);
-        iconTrash = (ImageView) rootView.findViewById(R.id.icon_trash);
-        txtTrashLocation = (TextView) rootView.findViewById(R.id.txt_trash_location);
-        txtTrashCapacity = (TextView) rootView.findViewById(R.id.txt_trash_capacity);
-        txtTrashName = (TextView) rootView.findViewById(R.id.txt_trash_name);
-        txtTrashUpdateTime = (TextView) rootView.findViewById(R.id.txt_trash_update_time);
 
         baiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
             @Override
@@ -140,21 +124,21 @@ public class MonitorFragment extends Fragment {
     }
 
     private void showUserLocation(){
-        if(currentLocation == null)
+        if(GlobalInfo.currentLocation == null || rootView == null)
             return;
         if(userMarker != null)
             userMarker.remove();
-        LatLng pos = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+        LatLng pos = new LatLng(GlobalInfo.currentLocation.getLatitude(), GlobalInfo.currentLocation.getLongitude());
         userMarkerOptions.position(pos);
         userMarker = (Marker) baiduMap.addOverlay(userMarkerOptions);
         if(!mapCenterFlag){
             baiduMap.setMapStatus(MapStatusUpdateFactory.newLatLng(pos));
             mapCenterFlag = true;
         }
-        if(cleanerLocationView.getVisibility() == View.VISIBLE || trashLocationView.getVisibility() == View.VISIBLE)
+        if(cleanerLocationView.getVisibility() == View.VISIBLE || trashMonitorView.getVisibility() == View.VISIBLE)
             return;
         userLocationView.setVisibility(View.VISIBLE);
-        txtUserUpdateTime.setText(DateTimeUtil.convertTimestamp(getContext(), currentLocation.getUpdateTime(), true, true, true));
+        txtUserUpdateTime.setText(DateTimeUtil.convertTimestamp(getContext(), GlobalInfo.currentLocation.getUpdateTime(), true, true, true));
         userLocationGeoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(pos));
     }
 
@@ -170,6 +154,7 @@ public class MonitorFragment extends Fragment {
     public void onDestroy() {
         mMapView.onDestroy();
         getContext().unregisterReceiver(locationReceiver);
+        rootView = null;
         userLocationGeoCoder.destroy();
         cleanerLocationGeoCoder.destroy();
         super.onDestroy();
@@ -194,7 +179,6 @@ public class MonitorFragment extends Fragment {
             UserLocation newLoc = GsonUtil.getGson().fromJson(intent.getStringExtra(Application.BUNDLE_KEY_USER_LOCATION_DATA),
                     UserLocation.class);
             if(GlobalInfo.user.getUserId().equals(newLoc.getUserId())){
-                currentLocation = newLoc;
                 showUserLocation();
             }
         }

@@ -33,7 +33,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.trashnetwork
         }
-        debug{
+        debug {
             signingConfig signingConfigs.trashnetwork
         }
     }
@@ -60,14 +60,19 @@ dependencies {
             'com.rengwuxian.materialedittext:library:2.1.4',
             'com.github.nekocode:Badge:1.6.2',
             'com.github.bmelnychuk:atv:1.2.+',
-            'com.microsoft.azure:notification-hubs-android-sdk:0.4@aar',
+            'com.journeyapps:zxing-android-embedded:3.4.0',
             'org.eclipse.paho:org.eclipse.paho.client.mqttv3:+',
     )
+
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
     compile 'com.android.support:support-v4:24.2.1'
     compile 'com.android.support:support-vector-drawable:24.2.1'
     compile 'com.android.support:recyclerview-v7:24.2.1'
     compile 'com.android.support:cardview-v7:24.2.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta5'
     testCompile 'junit:junit:4.12'
 }

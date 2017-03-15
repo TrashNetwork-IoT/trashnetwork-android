@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import happyyoung.trashnetwork.Application;
 import happyyoung.trashnetwork.R;
 import happyyoung.trashnetwork.adapter.SessionMessageAdapter;
@@ -28,7 +30,8 @@ import happyyoung.trashnetwork.util.GlobalInfo;
 
 public class MessageFragment extends Fragment {
     private View viewRoot;
-    private RecyclerView sessionListView;
+    @BindView(R.id.session_msg_list) RecyclerView sessionListView;
+
     private LinkedList<SessionMessageAdapter.MessageItem> sessionList = new LinkedList<>();
     private SessionMessageAdapter adapter;
 
@@ -51,7 +54,8 @@ public class MessageFragment extends Fragment {
         if(viewRoot != null)
             return viewRoot;
         viewRoot = inflater.inflate(R.layout.fragment_message, container, false);
-        sessionListView = (RecyclerView) viewRoot.findViewById(R.id.session_msg_list);
+        ButterKnife.bind(this, viewRoot);
+
         sessionListView.setNestedScrollingEnabled(false);
         sessionListView.setLayoutManager(new LinearLayoutManager(getActivity()));
         List<SessionRecord> records = DatabaseUtil.findAllSessionRecords(GlobalInfo.user.getUserId());
@@ -101,7 +105,7 @@ public class MessageFragment extends Fragment {
             return;
         sessionList.addFirst(item);
         adapter.notifyItemInserted(0);
-        viewRoot.findViewById(R.id.txt_no_message).setVisibility(View.GONE);
+        ButterKnife.findById(viewRoot, R.id.txt_no_message).setVisibility(View.GONE);
     }
 
     private void updateSessionInfo(SessionMessageAdapter.MessageItem item, SessionRecord newSession, boolean fullUpdate){

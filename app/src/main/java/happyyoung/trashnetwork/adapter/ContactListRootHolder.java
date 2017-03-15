@@ -11,6 +11,9 @@ import android.widget.TextView;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import happyyoung.trashnetwork.R;
 import happyyoung.trashnetwork.util.ImageUtil;
 
@@ -21,7 +24,12 @@ import happyyoung.trashnetwork.util.ImageUtil;
 public class ContactListRootHolder extends TreeNode.BaseNodeViewHolder<ContactListRootHolder.IconTextItem> {
     private Context mContext;
     private AndroidTreeView mTreeView;
+
     private View mViewRoot;
+    @BindView(R.id.item_icon_arrow) ImageView arrowIcon;
+    @BindView(R.id.item_icon) ImageView itemIcon;
+    @BindView(R.id.txt_contactlist_name) TextView txtContactListName;
+    @BindView(R.id.txt_contactlist_size) TextView txtContactListSize;
 
     public ContactListRootHolder(Context context, AndroidTreeView treeView) {
         super(context);
@@ -33,7 +41,7 @@ public class ContactListRootHolder extends TreeNode.BaseNodeViewHolder<ContactLi
     public View createNodeView(final TreeNode node, IconTextItem value) {
         mViewRoot = LayoutInflater.from(mContext).inflate(R.layout.item_contactlist_root, null, false);
         mViewRoot.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        final ImageView arrowIcon = (ImageView) mViewRoot.findViewById(R.id.item_icon_arrow);
+        ButterKnife.bind(this, mViewRoot);
         mViewRoot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,12 +59,9 @@ public class ContactListRootHolder extends TreeNode.BaseNodeViewHolder<ContactLi
     }
 
     public void updateNodeView(IconTextItem value){
-        TextView itemText = (TextView) mViewRoot.findViewById(R.id.item_text);
-        ImageView itemIcon = (ImageView) mViewRoot.findViewById(R.id.item_icon);
-        TextView itemNumText = (TextView) mViewRoot.findViewById(R.id.item_num_text);
-        itemText.setText(value.text);
+        txtContactListName.setText(value.text);
         itemIcon.setImageResource(value.iconRes);
-        itemNumText.setText(Integer.toString(value.num));
+        txtContactListSize.setText(Integer.toString(value.num));
     }
 
     public static class IconTextItem{

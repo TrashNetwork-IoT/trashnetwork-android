@@ -23,6 +23,9 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import happyyoung.trashnetwork.Application;
 import happyyoung.trashnetwork.R;
 import happyyoung.trashnetwork.adapter.ChatMessageAdapter;
@@ -37,9 +40,11 @@ public class ChatActivity extends AppCompatActivity {
     public static final String BUNDLE_KEY_SESSION_ID = "SessionId";
     public static final String BUNDLE_KEY_SESSION_TYPE = "SessionType";
 
-    private SwipeRefreshLayout refresh;
-    private RecyclerView chatListView;
-    private EditText editChatMsg;
+    @BindView(R.id.refresh_layout) SwipeRefreshLayout refresh;
+    @BindView(R.id.chat_list) RecyclerView chatListView;
+    @BindView(R.id.chat_msg_edit) EditText editChatMsg;
+    @BindView(R.id.btn_send_msg) ImageButton btnSendMessage;
+
     private LinkedList<Object> messageList = new LinkedList<>();
     private ChatMessageAdapter adapter;
     private Calendar endTime;
@@ -61,9 +66,9 @@ public class ChatActivity extends AppCompatActivity {
         endTime = Calendar.getInstance();
 
         setContentView(R.layout.activity_chat);
+        ButterKnife.bind(this);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        editChatMsg = (EditText) findViewById(R.id.chat_msg_edit);
-        refresh = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
         refresh.setColorSchemeResources(R.color.colorAccent);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -72,19 +77,11 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        chatListView = (RecyclerView) findViewById(R.id.chat_list);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         chatListView.setLayoutManager(layoutManager);
         chatListView.setNestedScrollingEnabled(false);
-        final ImageButton btnSendMessage = (ImageButton) findViewById(R.id.btn_send_msg);
         btnSendMessage.setEnabled(false);
-        btnSendMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendTextMessage();
-            }
-        });
 
         char sessionType = getIntent().getCharExtra(BUNDLE_KEY_SESSION_TYPE, SessionRecord.SESSION_TYPE_UNKNOWN);
         long sessionId = getIntent().getLongExtra(BUNDLE_KEY_SESSION_ID, -1);
@@ -124,6 +121,11 @@ public class ChatActivity extends AppCompatActivity {
         filter.addCategory(getPackageName());
         receivedMessageReceiver = new ReceivedMessageReceiver();
         registerReceiver(receivedMessageReceiver, filter);
+    }
+
+    @OnClick(R.id.btn_send_msg)
+    void onBtnSendMsgClick(View v){
+        sendTextMessage();
     }
 
     private void updateChatHistory(){

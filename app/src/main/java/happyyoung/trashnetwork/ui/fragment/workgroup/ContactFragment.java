@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
+import butterknife.ButterKnife;
 import happyyoung.trashnetwork.R;
 import happyyoung.trashnetwork.adapter.ContactListContactHolder;
 import happyyoung.trashnetwork.adapter.ContactListRootHolder;
@@ -43,6 +44,7 @@ public class ContactFragment extends Fragment implements ContactListener {
         if(rootView != null)
             return rootView;
         rootView = inflater.inflate(R.layout.fragment_contact, container, false);
+        ButterKnife.bind(this, rootView);
         treeRoot = TreeNode.root();
         AndroidTreeView atv = new AndroidTreeView(getActivity(), treeRoot);
         atv.setDefaultAnimation(true);

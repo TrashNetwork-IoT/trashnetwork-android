@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.unnamed.b.atv.model.TreeNode;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import happyyoung.trashnetwork.R;
 
 /**
@@ -19,7 +21,10 @@ import happyyoung.trashnetwork.R;
 public class ContactListContactHolder extends TreeNode.BaseNodeViewHolder<ContactListContactHolder.IconTextItem> {
     private Context mContext;
     private View.OnClickListener mCLickListener;
+
     private View mViewRoot;
+    @BindView(R.id.contact_name) TextView txtContactName;
+    @BindView(R.id.contact_portrait) ImageView contactPortrait;
 
     public ContactListContactHolder(Context context, View.OnClickListener itemClicklistener) {
         super(context);
@@ -32,6 +37,7 @@ public class ContactListContactHolder extends TreeNode.BaseNodeViewHolder<Contac
         if(mViewRoot != null)
             return mViewRoot;
         mViewRoot = LayoutInflater.from(mContext).inflate(R.layout.item_contactlist_contact, null, false);
+        ButterKnife.bind(this, mViewRoot);
         mViewRoot.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mViewRoot.setOnClickListener(mCLickListener);
         updateNodeView(value);
@@ -39,10 +45,8 @@ public class ContactListContactHolder extends TreeNode.BaseNodeViewHolder<Contac
     }
 
     public void updateNodeView(IconTextItem value) {
-        TextView itemText = (TextView) mViewRoot.findViewById(R.id.contact_name);
-        ImageView itemIcon = (ImageView) mViewRoot.findViewById(R.id.contact_portrait);
-        itemText.setText(value.text);
-        itemIcon.setImageBitmap(value.icon);
+        txtContactName.setText(value.text);
+        contactPortrait.setImageBitmap(value.icon);
     }
 
     public static class IconTextItem{

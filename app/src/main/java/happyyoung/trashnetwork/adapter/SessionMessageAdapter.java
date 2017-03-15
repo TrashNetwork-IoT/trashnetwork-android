@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cn.nekocode.badge.BadgeDrawable;
 import happyyoung.trashnetwork.R;
 import happyyoung.trashnetwork.database.model.ChatMessageRecord;
@@ -37,12 +39,6 @@ public class SessionMessageAdapter extends RecyclerView.Adapter<SessionMessageAd
     @Override
     public SessionMessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         SessionMessageViewHolder holder = new SessionMessageViewHolder(LayoutInflater.from(context).inflate(R.layout.item_session_message, parent, false));
-        holder.portrait = (ImageView) holder.itemView.findViewById(R.id.session_portrait);
-        holder.sendingProgress = (ProgressBar) holder.itemView.findViewById(R.id.chat_send_progress);
-        holder.sessionTime = (TextView) holder.itemView.findViewById(R.id.txt_cleaner_update_time);
-        holder.sessionMsg = (TextView) holder.itemView.findViewById(R.id.session_msg);
-        holder.username = (TextView) holder.itemView.findViewById(R.id.txt_cleaner_name);
-        holder.badge = (ImageView) holder.itemView.findViewById(R.id.session_badge);
         return holder;
     }
 
@@ -85,17 +81,18 @@ public class SessionMessageAdapter extends RecyclerView.Adapter<SessionMessageAd
     }
 
     class SessionMessageViewHolder extends RecyclerView.ViewHolder{
-        private View itemView;
-        private ImageView portrait;
-        private TextView username;
-        private TextView sessionTime;
-        private TextView sessionMsg;
-        private ProgressBar sendingProgress;
-        private ImageView badge;
+        View itemView;
+        @BindView(R.id.session_portrait) ImageView portrait;
+        @BindView(R.id.txt_session_display_name) TextView username;
+        @BindView(R.id.txt_session_update_time) TextView sessionTime;
+        @BindView(R.id.txt_session_msg) TextView sessionMsg;
+        @BindView(R.id.chat_send_progress) ProgressBar sendingProgress;
+        @BindView(R.id.session_badge) ImageView badge;
 
         public SessionMessageViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;
+            ButterKnife.bind(this, itemView);
         }
     }
 
