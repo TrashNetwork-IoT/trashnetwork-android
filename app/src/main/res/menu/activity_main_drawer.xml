@@ -11,6 +11,10 @@
             android:icon="@drawable/ic_friend"
             android:title="@string/action_work_group"/>
 
+        <item android:id="@+id/nav_work_record"
+            android:icon="@drawable/ic_work"
+            android:title="@string/action_work_record"/>
+
         <item android:id="@+id/nav_feedback"
             android:icon="@drawable/ic_feedback"
             android:title="@string/action_feedback"/>

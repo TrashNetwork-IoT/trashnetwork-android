@@ -1,6 +1,5 @@
 package happyyoung.trashnetwork.ui.fragment;
 
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 
@@ -26,6 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import happyyoung.trashnetwork.Application;
 import happyyoung.trashnetwork.R;
+import happyyoung.trashnetwork.model.User;
 import happyyoung.trashnetwork.net.http.HttpApi;
 import happyyoung.trashnetwork.net.http.HttpApiJsonListener;
 import happyyoung.trashnetwork.net.http.HttpApiJsonRequest;
@@ -37,14 +38,14 @@ import happyyoung.trashnetwork.ui.fragment.workgroup.MessageFragment;
 import happyyoung.trashnetwork.util.GlobalInfo;
 
 public class WorkgroupFragment extends Fragment {
-    private boolean finFlag = false;
     private View rootView;
     private MessageFragment messageFragment;
     private ContactFragment contactFragment;
+
     @BindView(R.id.tab_workgroup) TabLayout tabLayout;
     @BindView(R.id.tab_viewpager_workgroup) ViewPager viewPager;
-    @BindView(R.id.workgroup_progress) ProgressBar viewProgress;
-    @BindView(R.id.view_workgroup) View viewWorkgroup;
+    @BindView(R.id.txt_no_contact) TextView txtNoContact;
+    @BindView(R.id.workgroup_view) View workgroupView;
 
     private ServiceConnection mqttServConn;
 
@@ -56,63 +57,8 @@ public class WorkgroupFragment extends Fragment {
         WorkgroupFragment fragment = new WorkgroupFragment();
         fragment.contactFragment = ContactFragment.newInstance(context);
         fragment.messageFragment = MessageFragment.newInstance(context);
-        fragment.getContacts(context);
+        fragment.bindMqttService(context);
         return fragment;
-    }
-
-    private void getContacts(final Context context){
-        HttpApi.startRequest(new HttpApiJsonRequest(context, HttpApi.getApiUrl(HttpApi.AccountApi.ALL_GROUP_USERS), Request.Method.GET,
-                GlobalInfo.token, null, new HttpApiJsonListener<UserListResult>(UserListResult.class) {
-            @Override
-            public void onResponse(UserListResult data) {
-                finFlag = true;
-                showContent();
-                GlobalInfo.groupWorkers = data.getUserList();
-
-                Intent mqttIntent = new Intent(context, MqttService.class);
-                context.startService(mqttIntent);
-                mqttServConn = new ServiceConnection() {
-                    @Override
-                    public void onServiceConnected(ComponentName name, IBinder service) {
-                        try {
-                            ((MqttService.Binder) service).getService().addMQTTAction(new MqttService.MqttSubscriptionAction(
-                                    Application.MQTT_TOPIC_CHATTING, MqttService.TOPIC_TYPE_PRIVATE, GlobalInfo.user.getUserId(),
-                                    1, Application.ACTION_CHAT_MESSAGE_RECEIVED
-                            ));
-                            ((MqttService.Binder) service).getService().startWork(GlobalInfo.user.getUserId(),
-                                    GlobalInfo.token);
-                        }catch (MqttException me){
-                            me.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onServiceDisconnected(ComponentName name) {}
-                };
-                context.bindService(mqttIntent, mqttServConn, Context.BIND_AUTO_CREATE);
-            }
-
-            @Override
-            public boolean onErrorResponse(int statusCode, Result errorInfo) {
-                return false;
-            }
-
-            @Override
-            public boolean onDataCorrupted(Throwable e) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                       getContacts(context);
-                    }
-                }, 1000);
-                return false;
-            }
-
-            @Override
-            public boolean onNetworkError(Throwable e) {
-                return false;
-            }
-        }));
     }
 
     @Override
@@ -127,10 +73,16 @@ public class WorkgroupFragment extends Fragment {
             messageFragment = MessageFragment.newInstance(getContext());
         if(contactFragment == null)
             contactFragment = ContactFragment.newInstance(getContext());
+        if(mqttServConn == null)
+            bindMqttService(getContext());
 
-        if(finFlag)
-            showContent();
+        viewPager.setAdapter(new WorkgroupPagerAdapter(getFragmentManager()));
+        tabLayout.setupWithViewPager(viewPager);
 
+        if(!GlobalInfo.groupWorkers.isEmpty()){
+            txtNoContact.setVisibility(View.GONE);
+            workgroupView.setVisibility(View.VISIBLE);
+        }
         return rootView;
     }
 
@@ -167,18 +119,33 @@ public class WorkgroupFragment extends Fragment {
         }
     }
 
-    private void showContent(){
-        if(rootView == null || viewWorkgroup.getVisibility() == View.VISIBLE)
-            return;
-        viewPager.setAdapter(new WorkgroupPagerAdapter(getFragmentManager()));
-        tabLayout.setupWithViewPager(viewPager);
-        viewProgress.setVisibility(View.GONE);
-        viewWorkgroup.setVisibility(View.VISIBLE);
-    }
-
     @Override
     public void onDestroy() {
         getContext().unbindService(mqttServConn);
         super.onDestroy();
+    }
+
+    private void bindMqttService(Context context){
+        Intent mqttIntent = new Intent(context, MqttService.class);
+        context.startService(mqttIntent);
+        mqttServConn = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                try {
+                    ((MqttService.Binder) service).getService().addMQTTAction(new MqttService.MqttSubscriptionAction(
+                            Application.MQTT_TOPIC_CHATTING, MqttService.TOPIC_TYPE_PRIVATE, GlobalInfo.user.getUserId(),
+                            1, Application.ACTION_CHAT_MESSAGE_RECEIVED
+                    ));
+                    ((MqttService.Binder) service).getService().startWork(GlobalInfo.user.getUserId(),
+                            GlobalInfo.token);
+                }catch (MqttException me){
+                    me.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {}
+        };
+        context.bindService(mqttIntent, mqttServConn, Context.BIND_AUTO_CREATE);
     }
 }

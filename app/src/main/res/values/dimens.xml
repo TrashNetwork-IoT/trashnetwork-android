@@ -25,6 +25,7 @@
     <dimen name="welcome_icon_size">128dp</dimen>
     <dimen name="tab_layout_size">35dp</dimen>
     <dimen name="item_padding">8dp</dimen>
+    <dimen name="item_padding_small">4dp</dimen>
     <dimen name="chatbox_space">60dp</dimen>
 
 </resources>

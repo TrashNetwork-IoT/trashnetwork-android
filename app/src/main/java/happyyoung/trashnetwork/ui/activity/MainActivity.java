@@ -34,9 +34,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import happyyoung.trashnetwork.Application;
 import happyyoung.trashnetwork.R;
+import happyyoung.trashnetwork.model.Trash;
 import happyyoung.trashnetwork.model.User;
 import happyyoung.trashnetwork.service.LocationService;
+import happyyoung.trashnetwork.ui.fragment.FeedbackFragment;
 import happyyoung.trashnetwork.ui.fragment.MonitorFragment;
+import happyyoung.trashnetwork.ui.fragment.WorkRecordFragment;
 import happyyoung.trashnetwork.ui.fragment.WorkgroupFragment;
 import happyyoung.trashnetwork.util.DatabaseUtil;
 import happyyoung.trashnetwork.util.GlobalInfo;
@@ -49,6 +52,8 @@ public class MainActivity extends AppCompatActivity
 
     private MonitorFragment monitorFragment;
     private WorkgroupFragment workgroupFragment;
+    private WorkRecordFragment workRecordFragment;
+    private FeedbackFragment feedbackFragment;
 
     private FragmentManager mFragmentManager;
 
@@ -73,8 +78,19 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         monitorFragment = MonitorFragment.newInstance(this);
         workgroupFragment = WorkgroupFragment.newInstance(this);
+        switch (GlobalInfo.user.getAccountType()){
+            case User.ACCOUNT_TYPE_CLEANER:
+                workRecordFragment = WorkRecordFragment.newInstance(this, GlobalInfo.user, null);
+                break;
+            case User.ACCOUNT_TYPE_MANAGER:
+                workRecordFragment = WorkRecordFragment.newInstance(this, null, null);
+                break;
+        }
+        feedbackFragment = FeedbackFragment.newInstance(this);
         transaction.add(R.id.main_container, monitorFragment)
                    .add(R.id.main_container, workgroupFragment)
+                   .add(R.id.main_container, workRecordFragment)
+                   .add(R.id.main_container, feedbackFragment)
                    .commit();
         onNavigationItemSelected(navView.getMenu().getItem(0));
 
@@ -129,6 +145,20 @@ public class MainActivity extends AppCompatActivity
                 ft.commit();
                 setTitle(getString(R.string.action_work_group));
                 break;
+            case R.id.nav_work_record:
+                ft = mFragmentManager.beginTransaction();
+                hideAllFragment(ft);
+                ft.show(workRecordFragment);
+                ft.commit();
+                setTitle(getString(R.string.action_work_record));
+                break;
+            case R.id.nav_feedback:
+                ft = mFragmentManager.beginTransaction();
+                hideAllFragment(ft);
+                ft.show(feedbackFragment);
+                ft.commit();
+                setTitle(getString(R.string.action_feedback));
+                break;
             case R.id.nav_scan_qrcode:
                 scanQRCode();
                 break;
@@ -158,6 +188,8 @@ public class MainActivity extends AppCompatActivity
     private void hideAllFragment(FragmentTransaction ft){
         ft.hide(monitorFragment);
         ft.hide(workgroupFragment);
+        ft.hide(workRecordFragment);
+        ft.hide(feedbackFragment);
     }
 
     @Override

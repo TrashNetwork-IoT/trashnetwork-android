@@ -2,7 +2,9 @@ package happyyoung.trashnetwork.ui.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -39,6 +41,7 @@ import happyyoung.trashnetwork.net.http.HttpApiJsonRequest;
 import happyyoung.trashnetwork.net.model.request.LoginRequest;
 import happyyoung.trashnetwork.net.model.result.LoginResult;
 import happyyoung.trashnetwork.net.model.result.Result;
+import happyyoung.trashnetwork.net.model.result.UserListResult;
 import happyyoung.trashnetwork.net.model.result.UserResult;
 import happyyoung.trashnetwork.util.DatabaseUtil;
 import happyyoung.trashnetwork.util.GlobalInfo;
@@ -214,6 +217,32 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(UserResult data) {
                 GlobalInfo.user = data.getUser();
+                getContacts(activity, listener);
+            }
+
+            @Override
+            public boolean onErrorResponse(int statusCode, Result errorInfo) {
+                return listener.onErrorResponse(statusCode, errorInfo);
+            }
+
+            @Override
+            public boolean onDataCorrupted(Throwable e) {
+                return listener.onDataCorrupted(e);
+            }
+
+            @Override
+            public boolean onNetworkError(Throwable e) {
+                return listener.onNetworkError(e);
+            }
+        }));
+    }
+
+    private static void getContacts(final Activity activity, final HttpApiJsonListener<Result> listener){
+        HttpApi.startRequest(new HttpApiJsonRequest(activity, HttpApi.getApiUrl(HttpApi.AccountApi.ALL_GROUP_USERS), Request.Method.GET,
+                GlobalInfo.token, null, new HttpApiJsonListener<UserListResult>(UserListResult.class) {
+            @Override
+            public void onResponse(UserListResult data) {
+                GlobalInfo.groupWorkers = data.getUserList();
                 Intent intent = new Intent(activity, MainActivity.class);
                 activity.startActivity(intent);
                 activity.finish();

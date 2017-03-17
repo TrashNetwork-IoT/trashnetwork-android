@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:background="?attr/selectableItemBackground">
+
+    <LinearLayout android:id="@+id/trash_view_area"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerVertical="true"
+        android:padding="@dimen/item_padding"
+        android:layout_toStartOf="@+id/work_record_time_view">
+
+        <ImageView android:id="@+id/icon_done"
+            android:layout_width="@dimen/small_icon_size"
+            android:layout_height="@dimen/small_icon_size"
+            app:srcCompat="@drawable/ic_done"
+            android:tint="@color/light_green_500"
+            android:layout_gravity="center_vertical" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/cleaner_portrait"
+            android:layout_width="@dimen/normal_icon_size"
+            android:layout_height="@dimen/normal_icon_size"
+            android:layout_marginEnd="@dimen/item_padding"
+            android:layout_gravity="center_vertical"
+            app:civ_border_width="1dp"
+            app:civ_fill_color="@color/grey_200"
+            app:civ_border_color="@android:color/white"/>
+
+        <TextView android:id="@+id/txt_cleaner_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="TrashNetowrk"
+            android:textColor="@android:color/black"/>
+
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/work_record_time_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="@dimen/item_padding"
+        android:orientation="vertical">
+
+        <TextView android:id="@+id/txt_work_record_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/yesterday"
+            android:textColor="@color/indigo_500"
+            android:layout_gravity="end"
+            android:textSize="@dimen/small_text_size"
+            android:visibility="gone"/>
+
+        <TextView android:id="@+id/txt_work_record_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="17:00"
+            android:layout_gravity="end"
+            android:textColor="@color/indigo_500"
+            android:textSize="@dimen/large_text_size"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/grey_300"/>
+
+</RelativeLayout>

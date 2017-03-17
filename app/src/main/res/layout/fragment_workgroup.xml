@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="happyyoung.trashnetwork.ui.fragment.WorkgroupFragment">
 
-    <LinearLayout android:id="@+id/view_workgroup"
+    <LinearLayout android:id="@+id/workgroup_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -32,10 +32,15 @@
 
     </LinearLayout>
 
-    <ProgressBar android:id="@+id/workgroup_progress"
-        style="?android:attr/progressBarStyleLarge"
+    <TextView
+        android:id="@+id/txt_no_contact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"/>
+        android:layout_gravity="center"
+        android:drawableStart="@drawable/ic_info_outline_48dp"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:textSize="@dimen/large_text_size"
+        android:text="@string/no_contact"/>
 
 </RelativeLayout>

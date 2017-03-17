@@ -49,7 +49,7 @@ public class MonitorFragment extends Fragment {
     @BindView(R.id.txt_user_location) TextView txtUserLocation;
     @BindView(R.id.txt_user_update_time) TextView txtUserUpdateTime;
 
-    @BindView(R.id.cleaner_location_area) View cleanerLocationView;
+    @BindView(R.id.cleaner_view_area) View cleanerLocationView;
     @BindView(R.id.cleaner_portrait) ImageView cleanerPortrait;
     @BindView(R.id.txt_cleaner_name) TextView txtCleanerName;
     @BindView(R.id.txt_cleaner_location) TextView txtCleanerLocation;
@@ -58,7 +58,7 @@ public class MonitorFragment extends Fragment {
     @BindView(R.id.trash_view_area) View trashMonitorView;
     @BindView(R.id.icon_trash) ImageView iconTrash;
     @BindView(R.id.txt_trash_name) TextView txtTrashName;
-    @BindView(R.id.txt_trash_location) TextView txtTrashLocation;
+    @BindView(R.id.txt_trash_desc) TextView txtTrashDesc;
     @BindView(R.id.txt_trash_cleaned_time) TextView txtTrashCleanedTime;
     @BindView(R.id.trash_cleaner_portrait) ImageView trashCleanerPortrait;
 

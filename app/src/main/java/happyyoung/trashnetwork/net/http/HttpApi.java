@@ -26,10 +26,10 @@ public class HttpApi {
     }
 
     public static class AccountApi{
-        public static final String LOGIN = "account/login";
-        public static final String LOGOUT = "account/logout";
-        public static final String CHECK_LOGIN = "account/check_login";
-        public static final String USER_INFO_BY_ID = "account/user_info/by_id";
-        public static final String ALL_GROUP_USERS = "account/all_group_users";
+        public static final String LOGIN = "cleaning/account/login";
+        public static final String LOGOUT = "cleaning/account/logout";
+        public static final String CHECK_LOGIN = "cleaning/account/check_login";
+        public static final String USER_INFO_BY_ID = "cleaning/account/user_info/by_id";
+        public static final String ALL_GROUP_USERS = "cleaning/account/all_group_users";
     }
 }

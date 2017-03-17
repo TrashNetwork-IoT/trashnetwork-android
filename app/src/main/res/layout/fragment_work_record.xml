@@ -1,0 +1,31 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="happyyoung.trashnetwork.ui.fragment.WorkRecordFragment">
+
+    <include android:id="@+id/widget_date_selection"
+        layout="@layout/widget_date_selection"/>
+
+    <com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView
+        android:id="@+id/work_record_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/widget_date_selection"
+        android:scrollbars="vertical"
+        android:nestedScrollingEnabled="false" />
+
+    <TextView
+        android:id="@+id/txt_no_record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:drawableStart="@drawable/ic_info_outline_48dp"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:textSize="@dimen/large_text_size"
+        android:text="@string/no_record"
+        android:visibility="gone"/>
+
+</RelativeLayout>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/item_padding_small"
+        android:layout_marginBottom="@dimen/item_padding_small"
+        android:layout_marginStart="@dimen/item_padding"
+        android:layout_marginEnd="@dimen/item_padding"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout android:id="@+id/cleaner_view_area"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/item_padding">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/cleaner_portrait"
+                    android:layout_width="@dimen/normal_icon_size"
+                    android:layout_height="@dimen/normal_icon_size"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/item_padding"
+                    app:civ_border_width="1dp"
+                    app:civ_fill_color="@color/grey_200"
+                    app:civ_border_color="@android:color/white"/>
+
+                <TextView android:id="@+id/txt_cleaner_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="TrashNetowrk"
+                    android:textColor="@android:color/black"
+                    android:layout_marginEnd="@dimen/item_padding"
+                    android:layout_toStartOf="@+id/work_record_time_view"
+                    android:layout_toEndOf="@id/cleaner_portrait"/>
+
+                <LinearLayout android:id="@+id/work_record_time_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:orientation="vertical">
+
+                    <TextView android:id="@+id/txt_work_record_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/yesterday"
+                        android:textColor="@color/indigo_500"
+                        android:layout_gravity="end"
+                        android:textSize="@dimen/small_text_size"
+                        android:visibility="gone"/>
+
+                    <TextView android:id="@+id/txt_work_record_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="17:00"
+                        android:layout_gravity="end"
+                        android:textColor="@color/indigo_500"
+                        android:textSize="@dimen/large_text_size"/>
+
+                </LinearLayout>
+
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey_300"/>
+
+            <RelativeLayout android:id="@+id/trash_view_area"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/item_padding">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView android:id="@+id/icon_done"
+                        android:layout_width="@dimen/small_icon_size"
+                        android:layout_height="@dimen/small_icon_size"
+                        app:srcCompat="@drawable/ic_done"
+                        android:tint="@color/light_green_500"
+                        android:layout_gravity="center_vertical" />
+
+                    <ImageView android:id="@+id/icon_trash"
+                        android:layout_width="@dimen/normal_icon_size"
+                        android:layout_height="@dimen/normal_icon_size"
+                        android:layout_gravity="center_vertical"
+                        app:srcCompat="@drawable/ic_delete_green_32dp"
+                        android:layout_marginEnd="@dimen/item_padding"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_gravity="center_vertical">
+
+                        <TextView android:id="@+id/txt_trash_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@android:color/black"
+                            android:textSize="@dimen/normal_text_size"
+                            android:text="Trash #1"/>
+
+                        <TextView android:id="@+id/txt_trash_desc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TrashNetwork"
+                            android:textSize="@dimen/small_text_size"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </RelativeLayout>
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>

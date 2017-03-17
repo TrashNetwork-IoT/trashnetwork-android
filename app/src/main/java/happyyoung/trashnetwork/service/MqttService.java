@@ -37,8 +37,8 @@ public class MqttService extends Service implements MqttCallback {
     private static final int MAX_RETRY = 5;
     
     public static String BROKER_URL;
-    public static final String CLIENT_ID_PREFIX = "trashnetwork_mobile_user:";
-    public static final String USERNAME_PREFIX = "trashnetwork_mobile_user:";
+    public static final String CLIENT_ID_PREFIX = "trashnetwork_mobile_cleaning_user:";
+    public static final String USERNAME_PREFIX = "trashnetwork_mobile_cleaning_user:";
 
     private MqttClient mqttClient;
     private MqttConnectOptions connOpts;
@@ -91,6 +91,7 @@ public class MqttService extends Service implements MqttCallback {
                         mqttAction = actionQueue.poll(TIME_OUT, TimeUnit.MILLISECONDS);
                         if(mqttAction == null)
                             continue;
+                        final Object mqttActionClone = mqttAction;
                         for(int i = 0; !exitFlag && i < MAX_RETRY + 1; i++){
                             try {
                                 if (mqttAction instanceof MqttSubscriptionAction) {
@@ -99,8 +100,8 @@ public class MqttService extends Service implements MqttCallback {
                                     mqttClient.subscribe(topic, ((MqttSubscriptionAction) mqttAction).qos, new IMqttMessageListener() {
                                         @Override
                                         public void messageArrived(String topic, MqttMessage message) throws Exception {
-                                            if (((MqttSubscriptionAction) mqttAction).action != null && !((MqttSubscriptionAction) mqttAction).action.isEmpty()) {
-                                                Intent intent = new Intent(((MqttSubscriptionAction) mqttAction).action);
+                                            if (((MqttSubscriptionAction) mqttActionClone).action != null && !((MqttSubscriptionAction) mqttActionClone).action.isEmpty()) {
+                                                Intent intent = new Intent(((MqttSubscriptionAction) mqttActionClone).action);
                                                 intent.addCategory(getPackageName());
                                                 parseTopic(topic, intent);
                                                 intent.putExtra(BUNDLE_KEY_MESSAGE, new String(message.getPayload()));
