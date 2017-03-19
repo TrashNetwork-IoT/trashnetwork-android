@@ -40,7 +40,9 @@
     <string name="no_contact">No contact</string>
 
     <string name="no_message">No message</string>
+    <string name="cleaner">Cleaner</string>
     <string name="cleaners">Cleaners</string>
+    <string name="manager">Manager</string>
     <string name="managers">Managers</string>
     <string name="groups">Groups</string>
 
@@ -51,4 +53,8 @@
     <string name="no_feedback">No feedback</string>
     <string name="no_record">No record</string>
     <string name="trash">Trash</string>
+    <string name="action_send_message">Send Message</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="location">Location</string>
+    <string name="action_view_more_records">View More Records</string>
 </resources>

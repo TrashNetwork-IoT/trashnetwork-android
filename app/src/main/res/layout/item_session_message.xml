@@ -98,7 +98,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="@dimen/separator_size"
         android:background="@color/grey_300"
         android:layout_below="@+id/session_portrait"
         android:layout_marginEnd="@dimen/item_padding"

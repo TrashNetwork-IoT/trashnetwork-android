@@ -62,6 +62,7 @@ dependencies {
             'com.github.bmelnychuk:atv:1.2.+',
             'com.journeyapps:zxing-android-embedded:3.4.0',
             'com.wuxiaolong.pullloadmorerecyclerview:library:1.1.2',
+            'com.github.medyo:android-about-page:1.2',
             'org.eclipse.paho:org.eclipse.paho.client.mqttv3:+',
     )
 

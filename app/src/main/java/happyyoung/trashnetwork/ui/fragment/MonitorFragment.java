@@ -29,6 +29,7 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import happyyoung.trashnetwork.Application;
 import happyyoung.trashnetwork.R;
 import happyyoung.trashnetwork.model.UserLocation;
@@ -121,6 +122,14 @@ public class MonitorFragment extends Fragment {
         getContext().registerReceiver(locationReceiver, filter);
 
         return rootView;
+    }
+
+    @OnClick(R.id.user_location_area)
+    void onUserLocationViewClick(View v){
+        baiduMap.setMapStatus(MapStatusUpdateFactory.newLatLng(
+                new LatLng(GlobalInfo.currentLocation.getLatitude(),
+                        GlobalInfo.currentLocation.getLongitude())
+        ));
     }
 
     private void showUserLocation(){

@@ -12,10 +12,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 
@@ -31,6 +34,7 @@ import happyyoung.trashnetwork.R;
 import happyyoung.trashnetwork.adapter.ChatMessageAdapter;
 import happyyoung.trashnetwork.database.model.ChatMessageRecord;
 import happyyoung.trashnetwork.database.model.SessionRecord;
+import happyyoung.trashnetwork.model.User;
 import happyyoung.trashnetwork.service.MqttService;
 import happyyoung.trashnetwork.util.DatabaseUtil;
 import happyyoung.trashnetwork.util.GlobalInfo;
@@ -40,6 +44,8 @@ public class ChatActivity extends AppCompatActivity {
     public static final String BUNDLE_KEY_SESSION_ID = "SessionId";
     public static final String BUNDLE_KEY_SESSION_TYPE = "SessionType";
 
+    @BindView(R.id.toolbar_portrait) ImageView toolbarPortrait;
+    @BindView(R.id.txt_toolbar_contact_name) TextView txtToolbarContactName;
     @BindView(R.id.refresh_layout) SwipeRefreshLayout refresh;
     @BindView(R.id.chat_list) RecyclerView chatListView;
     @BindView(R.id.chat_msg_edit) EditText editChatMsg;
@@ -67,7 +73,7 @@ public class ChatActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
-
+        setSupportActionBar((Toolbar) ButterKnife.findById(this, R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         refresh.setColorSchemeResources(R.color.colorAccent);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -95,6 +101,9 @@ public class ChatActivity extends AppCompatActivity {
             adapter = new ChatMessageAdapter(this, messageList, true);
         }else {
             adapter = new ChatMessageAdapter(this, messageList, false);
+            User u = GlobalInfo.findUserById(sessionId);
+            toolbarPortrait.setImageBitmap(u.getPortrait());
+            txtToolbarContactName.setText(u.getName());
             setTitle(GlobalInfo.findUserById(sessionId).getName());
         }
         chatListView.setAdapter(adapter);
@@ -126,6 +135,18 @@ public class ChatActivity extends AppCompatActivity {
     @OnClick(R.id.btn_send_msg)
     void onBtnSendMsgClick(View v){
         sendTextMessage();
+    }
+
+    @OnClick(R.id.toolbar_contact_view)
+    void onToolbarContactViewClick(View v){
+        switch (session.getSessionType()){
+            case SessionRecord.SESSION_TYPE_USER:
+                Intent intent = new Intent(this, UserInfoActivity.class);
+                intent.putExtra(UserInfoActivity.BUNDLE_KEY_USER_ID, session.getSessionId());
+                intent.putExtra(UserInfoActivity.BUNDLE_KEY_SHOW_CHATTING, false);
+                startActivity(intent);
+                break;
+        }
     }
 
     private void updateChatHistory(){
