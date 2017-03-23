@@ -4,30 +4,44 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.android.volley.Request;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import happyyoung.trashnetwork.cleaning.R;
 import happyyoung.trashnetwork.cleaning.database.model.LoginUserRecord;
 import happyyoung.trashnetwork.cleaning.net.http.HttpApi;
 import happyyoung.trashnetwork.cleaning.net.http.HttpApiJsonListener;
 import happyyoung.trashnetwork.cleaning.net.http.HttpApiJsonRequest;
 import happyyoung.trashnetwork.cleaning.net.model.result.Result;
+import happyyoung.trashnetwork.cleaning.ui.widget.PreferenceCard;
 import happyyoung.trashnetwork.cleaning.util.DatabaseUtil;
 import happyyoung.trashnetwork.cleaning.util.GlobalInfo;
 
-public class SettingsActivity extends AppCompatPreferenceActivity {
-    @SuppressWarnings("deprecation")
+public class SettingsActivity extends AppCompatActivity {
+    @BindView(R.id.settings_container) LinearLayout container;
+    private PreferenceCard accountPref;
+    private PreferenceCard otherPref;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
+        ButterKnife.bind(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        addPreferencesFromResource(R.xml.settings);
-        findPreference("pref_logout").
-                setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+        accountPref = new PreferenceCard(this)
+                .addGroup(getString(R.string.account))
+                .addItem(R.drawable.ic_exit, getString(R.string.action_logout), null, new View.OnClickListener() {
                     @Override
-                    public boolean onPreferenceClick(Preference preference) {
+                    public void onClick(View v) {
                         final ProgressDialog pd = new ProgressDialog(SettingsActivity.this);
                         pd.setMessage(getString(R.string.alert_waiting));
                         pd.setCancelable(false);
@@ -61,9 +75,24 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                                         return true;
                                     }
                                 }));
-                        return true;
                     }
                 });
+
+        LinearLayoutCompat.LayoutParams params = new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.bottomMargin = getResources().getDimensionPixelSize(R.dimen.item_padding);
+
+        accountPref.getView().setLayoutParams(params);
+        container.addView(accountPref.getView());
+
+        otherPref = new PreferenceCard(this)
+                .addGroup(getString(R.string.other))
+                .addItem(R.drawable.ic_info_outline_48dp, getString(R.string.action_about), null, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(SettingsActivity.this, AboutActivity.class));
+                    }
+                });
+        container.addView(otherPref.getView());
     }
 
     private void logout(){
@@ -89,6 +118,5 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 
 }

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -50,8 +51,8 @@ public class LoginActivity extends AppCompatActivity {
     public static final String BUNDLE_KEY_AUTO_USER_ID = "AutoUserId";
 
     // UI references.
-    @BindView(R.id.login_id) AutoCompleteTextView mIdView;
-    @BindView(R.id.login_password) EditText mPasswordView;
+    @BindView(R.id.edit_id) AutoCompleteTextView mIdView;
+    @BindView(R.id.edit_password) EditText mPasswordView;
     @BindView(R.id.login_progress) ProgressBar mProgress;
     @BindView(R.id.login_portrait) ImageView mPortraitView;
     @BindView(R.id.btn_sign_in) Button mSignInButton;
@@ -64,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        setSupportActionBar((Toolbar) ButterKnife.findById(this, R.id.toolbar));
 
         loginRecords = DatabaseUtil.findAllLoginUserRecords(10);
         List<String> loginIdRecords = new ArrayList<>();
@@ -98,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
             mIdView.setText(Long.toString(autoId));
     }
 
-    @OnTextChanged(value = R.id.login_id, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
+    @OnTextChanged(value = R.id.edit_id, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void onIdTextChanged(Editable s) {
         try{
             if(!s.toString().isEmpty()) {
@@ -114,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
         mPortraitView.setImageResource(R.mipmap.ic_launcher);
     }
 
-    @OnEditorAction(R.id.login_password)
+    @OnEditorAction(R.id.edit_password)
     boolean onPasswordEditAction(TextView textView, int id, KeyEvent keyEvent){
         if(id == EditorInfo.IME_ACTION_DONE) {
             attemptLogin();
@@ -146,14 +148,14 @@ public class LoginActivity extends AppCompatActivity {
                     new HttpApiJsonListener<LoginResult>(LoginResult.class) {
                         @Override
                         public boolean onDataCorrupted(Throwable e) {
-                            mProgress.setVisibility(View.INVISIBLE);
+                            mProgress.setVisibility(View.GONE);
                             mSignInButton.setEnabled(true);
                             return false;
                         }
 
                         @Override
                         public boolean onNetworkError(Throwable e) {
-                            mProgress.setVisibility(View.INVISIBLE);
+                            mProgress.setVisibility(View.GONE);
                             mSignInButton.setEnabled(true);
                             return false;
                         }
@@ -167,21 +169,21 @@ public class LoginActivity extends AppCompatActivity {
 
                                 @Override
                                 public boolean onErrorResponse(int statusCode, Result errorInfo) {
-                                    mProgress.setVisibility(View.INVISIBLE);
+                                    mProgress.setVisibility(View.GONE);
                                     mSignInButton.setEnabled(true);
                                     return false;
                                 }
 
                                 @Override
                                 public boolean onDataCorrupted(Throwable e) {
-                                    mProgress.setVisibility(View.INVISIBLE);
+                                    mProgress.setVisibility(View.GONE);
                                     mSignInButton.setEnabled(true);
                                     return false;
                                 }
 
                                 @Override
                                 public boolean onNetworkError(Throwable e) {
-                                    mProgress.setVisibility(View.INVISIBLE);
+                                    mProgress.setVisibility(View.GONE);
                                     mSignInButton.setEnabled(true);
                                     return false;
                                 }
@@ -190,7 +192,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         @Override
                         public boolean onErrorResponse(int statusCode, Result errorInfo) {
-                            mProgress.setVisibility(View.INVISIBLE);
+                            mProgress.setVisibility(View.GONE);
                             mSignInButton.setEnabled(true);
                             if(errorInfo.getResultCode() == PublicResultCode.LOGIN_USER_NOT_EXIST){
                                 mIdView.setError(errorInfo.getMessage());

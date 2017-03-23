@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".cleaning.ui.activity.TrashInfoActivity">
+    tools:context=".ui.activity.TrashInfoActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar_layout"

@@ -110,7 +110,7 @@ public class TrashInfoActivity extends AppCompatActivity {
 
         workRecordCard = new PreferenceCard(this)
                 .addGroup(getString(R.string.action_work_record))
-                .addItem(R.drawable.ic_work, getString(R.string.action_view_more_records), null, null);
+                .addItem(R.drawable.ic_history, getString(R.string.action_view_more_records), null, null);
         trashInfoView.addView(workRecordCard.getView());
         if(GlobalInfo.user.getAccountType() != User.ACCOUNT_TYPE_CLEANER)
             btnClean.setVisibility(View.GONE);

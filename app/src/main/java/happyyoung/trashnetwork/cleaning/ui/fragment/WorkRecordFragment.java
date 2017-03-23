@@ -1,18 +1,18 @@
 package happyyoung.trashnetwork.cleaning.ui.fragment;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
+import com.malinskiy.superrecyclerview.OnMoreListener;
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,26 +20,25 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import happyyoung.trashnetwork.cleaning.R;
 import happyyoung.trashnetwork.cleaning.adapter.WorkRecordAdapter;
 import happyyoung.trashnetwork.cleaning.model.Trash;
 import happyyoung.trashnetwork.cleaning.model.User;
 import happyyoung.trashnetwork.cleaning.model.WorkRecord;
-import happyyoung.trashnetwork.cleaning.util.DateTimeUtil;
+import happyyoung.trashnetwork.cleaning.ui.widget.DateSelector;
 
 public class WorkRecordFragment extends Fragment {
     private View rootView;
     @BindView(R.id.txt_no_record) TextView txtNoRecord;
-    @BindView(R.id.work_record_list) PullLoadMoreRecyclerView workRecordListView;
-    @BindView(R.id.edit_date) EditText dateEdit;
+    @BindView(R.id.work_record_list) SuperRecyclerView workRecordListView;
+    private DateSelector dateSelector;
 
-    private DatePickerDialog datePickerDialog;
-    private Calendar workRecordDate;
     private List<WorkRecord> workRecordList = new ArrayList<>();
     private WorkRecordAdapter adapter;
     private User cleaner;
     private Trash trash;
+    private Calendar endTime;
+    private Calendar startTime;
 
     public WorkRecordFragment() {
         // Required empty public constructor
@@ -52,26 +51,6 @@ public class WorkRecordFragment extends Fragment {
         return fragment;
     }
 
-    @OnClick({R.id.btn_date_decrease, R.id.btn_date_increase, R.id.edit_date})
-    void onDateChangeClick(View v){
-        switch (v.getId()){
-            case R.id.btn_date_decrease:
-                workRecordDate.set(Calendar.DAY_OF_MONTH, workRecordDate.get(Calendar.DAY_OF_MONTH) - 1);
-                dateEdit.setText(DateTimeUtil.convertTimestamp(getContext(), workRecordDate.getTime(), true, false));
-                refreshWorkRecord();
-                break;
-            case R.id.btn_date_increase:
-                workRecordDate.set(Calendar.DAY_OF_MONTH, workRecordDate.get(Calendar.DAY_OF_MONTH) + 1);
-                dateEdit.setText(DateTimeUtil.convertTimestamp(getContext(), workRecordDate.getTime(), true, false));
-                refreshWorkRecord();
-                break;
-            case R.id.edit_date:
-                datePickerDialog.updateDate(workRecordDate.get(Calendar.YEAR), workRecordDate.get(Calendar.MONTH), workRecordDate.get(Calendar.DAY_OF_MONTH));
-                datePickerDialog.show();
-                break;
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -80,32 +59,32 @@ public class WorkRecordFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_work_record, container, false);
         ButterKnife.bind(this, rootView);
 
-        workRecordDate = Calendar.getInstance();
-        datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+        startTime = Calendar.getInstance();
+        endTime = Calendar.getInstance();
+        dateSelector = new DateSelector(rootView, endTime, new DateSelector.OnDateChangedListener() {
             @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                workRecordDate.set(year, month, dayOfMonth);
-                dateEdit.setText(DateTimeUtil.convertTimestamp(getContext(), workRecordDate.getTime(), true, false));
-                refreshWorkRecord();
-            }
-        }, workRecordDate.get(Calendar.YEAR), workRecordDate.get(Calendar.MONTH), workRecordDate.get(Calendar.DAY_OF_MONTH));
-
-        dateEdit.setText(DateTimeUtil.convertTimestamp(getContext(), workRecordDate.getTime(), true, false));
-        workRecordListView.setColorSchemeResources(R.color.colorAccent);
-        workRecordListView.setLinearLayout();
-        workRecordListView.setPullRefreshEnable(true);
-        workRecordListView.setPushRefreshEnable(false);
-        workRecordListView.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
-            @Override
-            public void onRefresh() {
-                refreshWorkRecord();
-            }
-
-            @Override
-            public void onLoadMore() {
-
+            public void onDateChanged(Calendar newDate) {
+                endTime = newDate;
+                refreshWorkRecord(true);
             }
         });
+
+        workRecordListView.setLayoutManager(new LinearLayoutManager(getContext()));
+        workRecordListView.getRecyclerView().setNestedScrollingEnabled(false);
+        workRecordListView.getSwipeToRefresh().setColorSchemeResources(R.color.colorAccent);
+        workRecordListView.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshWorkRecord(true);
+            }
+        });
+
+        workRecordListView.setupMoreListener(new OnMoreListener() {
+            @Override
+            public void onMoreAsked(int numberOfItems, int numberBeforeMore, int currentItemPos) {
+                refreshWorkRecord(false);
+            }
+        }, 0);
 
         if (cleaner == null && trash != null){
             adapter = new WorkRecordAdapter(getContext(), workRecordList, WorkRecordAdapter.VIEW_TYPE_WORK_RECORD_CLEANER_VIEW,
@@ -118,11 +97,21 @@ public class WorkRecordFragment extends Fragment {
                     false, null);
         }
         workRecordListView.setAdapter(adapter);
-        refreshWorkRecord();
+        refreshWorkRecord(true);
         return rootView;
     }
 
-    private void refreshWorkRecord(){
+    private void updateTime(){
+        endTime.set(Calendar.HOUR_OF_DAY, 23);
+        endTime.set(Calendar.MINUTE, 59);
+        endTime.set(Calendar.SECOND, 59);
+        startTime.set(endTime.get(Calendar.YEAR), endTime.get(Calendar.MONTH), endTime.get(Calendar.DATE),
+                0, 0, 0);
+    }
+
+    private void refreshWorkRecord(boolean refresh){
         //TODO
+        if(refresh)
+            updateTime();
     }
 }

@@ -1,7 +1,10 @@
 package happyyoung.trashnetwork.cleaning.net.http;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -19,6 +22,8 @@ import java.util.Map;
 
 import happyyoung.trashnetwork.cleaning.R;
 import happyyoung.trashnetwork.cleaning.net.DataCorruptionException;
+import happyyoung.trashnetwork.cleaning.ui.activity.LoginActivity;
+import happyyoung.trashnetwork.cleaning.util.GlobalInfo;
 
 /**
  * Created by shengyun-zhou <GGGZ-1101-28@Live.cn> on 2017-02-12
@@ -51,8 +56,6 @@ public abstract class HttpApiRequest extends Request {
                     }catch (DataCorruptionException dce){
                         processCorruptData(context, listener, error.getCause());
                     }
-                    if(error.networkResponse.statusCode == 500)
-                        showError(context, context.getString(R.string.server_internal_error));
                 }
             }
         });
@@ -102,5 +105,25 @@ public abstract class HttpApiRequest extends Request {
             Snackbar.make(((Activity) mContext).findViewById(android.R.id.content), error, Snackbar.LENGTH_SHORT).show();
         else
             Toast.makeText(mContext, error, Toast.LENGTH_SHORT).show();
+    }
+
+    static void requireLoginAgain(final Context context){
+        AlertDialog ad = new AlertDialog.Builder(context)
+                .setCancelable(false)
+                .setTitle(R.string.error)
+                .setMessage(R.string.alert_session_expired)
+                .setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(context, LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        if(GlobalInfo.user != null)
+                            intent.putExtra(LoginActivity.BUNDLE_KEY_AUTO_USER_ID, GlobalInfo.user.getUserId());
+                        GlobalInfo.logout(context);
+                        context.startActivity(intent);
+                    }
+                })
+                .create();
+        ad.show();
     }
 }

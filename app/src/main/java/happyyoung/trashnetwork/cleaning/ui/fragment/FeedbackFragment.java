@@ -4,13 +4,14 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
-import android.widget.EditText;
 
-import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
+import com.malinskiy.superrecyclerview.OnMoreListener;
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,21 +19,20 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import happyyoung.trashnetwork.cleaning.R;
 import happyyoung.trashnetwork.cleaning.adapter.FeedbackAdapter;
 import happyyoung.trashnetwork.cleaning.model.Feedback;
-import happyyoung.trashnetwork.cleaning.util.DateTimeUtil;
+import happyyoung.trashnetwork.cleaning.ui.widget.DateSelector;
 
 public class FeedbackFragment extends Fragment {
     private View rootView;
-    @BindView(R.id.feedback_list) PullLoadMoreRecyclerView feedbackListView;
-    @BindView(R.id.edit_date) EditText dateEdit;
-    private DatePickerDialog datePickerDialog;
+    @BindView(R.id.feedback_list) SuperRecyclerView feedbackListView;
+    private DateSelector dateSelector;
 
-    private Calendar feedbackDate;
     private List<Feedback> feedbackList = new ArrayList<>();
     private FeedbackAdapter adapter;
+    private Calendar endTime;
+    private Calendar startTime;
 
     public FeedbackFragment() {
         // Required empty public constructor
@@ -43,25 +43,6 @@ public class FeedbackFragment extends Fragment {
         return fragment;
     }
 
-    @OnClick({R.id.btn_date_decrease, R.id.btn_date_increase, R.id.edit_date})
-    void onDateChangeClick(View v){
-        switch (v.getId()){
-            case R.id.btn_date_decrease:
-                feedbackDate.set(Calendar.DAY_OF_MONTH, feedbackDate.get(Calendar.DAY_OF_MONTH) - 1);
-                dateEdit.setText(DateTimeUtil.convertTimestamp(getContext(), feedbackDate.getTime(), true, false));
-                refreshFeedback();
-                break;
-            case R.id.btn_date_increase:
-                feedbackDate.set(Calendar.DAY_OF_MONTH, feedbackDate.get(Calendar.DAY_OF_MONTH) + 1);
-                dateEdit.setText(DateTimeUtil.convertTimestamp(getContext(), feedbackDate.getTime(), true, false));
-                refreshFeedback();
-                break;
-            case R.id.edit_date:
-                datePickerDialog.updateDate(feedbackDate.get(Calendar.YEAR), feedbackDate.get(Calendar.MONTH), feedbackDate.get(Calendar.DAY_OF_MONTH));
-                datePickerDialog.show();
-                break;
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,40 +51,50 @@ public class FeedbackFragment extends Fragment {
             return rootView;
         rootView = inflater.inflate(R.layout.fragment_feedback, container, false);
         ButterKnife.bind(this, rootView);
-        feedbackDate = Calendar.getInstance();
-        datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+        endTime = Calendar.getInstance();
+        startTime = Calendar.getInstance();
+        dateSelector = new DateSelector(rootView, endTime, new DateSelector.OnDateChangedListener() {
             @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                feedbackDate.set(year, month, dayOfMonth);
-                dateEdit.setText(DateTimeUtil.convertTimestamp(getContext(), feedbackDate.getTime(), true, false));
-                refreshFeedback();
-            }
-        }, feedbackDate.get(Calendar.YEAR), feedbackDate.get(Calendar.MONTH), feedbackDate.get(Calendar.DAY_OF_MONTH));
-
-        dateEdit.setText(DateTimeUtil.convertTimestamp(getContext(), feedbackDate.getTime(), true, false));
-        feedbackListView.setColorSchemeResources(R.color.colorAccent);
-        feedbackListView.setLinearLayout();
-        feedbackListView.setPullRefreshEnable(true);
-        feedbackListView.setPushRefreshEnable(false);
-        feedbackListView.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
-            @Override
-            public void onRefresh() {
-                refreshFeedback();
-            }
-
-            @Override
-            public void onLoadMore() {
-
+            public void onDateChanged(Calendar newDate) {
+                endTime = newDate;
+                refreshFeedback(true);
             }
         });
 
+        feedbackListView.setLayoutManager(new LinearLayoutManager(getContext()));
+        feedbackListView.getRecyclerView().setNestedScrollingEnabled(false);
+        feedbackListView.getSwipeToRefresh().setColorSchemeResources(R.color.colorAccent);
+        feedbackListView.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshFeedback(true);
+            }
+        });
+
+        feedbackListView.setupMoreListener(new OnMoreListener() {
+            @Override
+            public void onMoreAsked(int numberOfItems, int numberBeforeMore, int currentItemPos) {
+                refreshFeedback(false);
+            }
+        }, 0);
+
         adapter = new FeedbackAdapter(getContext(), feedbackList);
         feedbackListView.setAdapter(adapter);
-        refreshFeedback();
+        refreshFeedback(true);
         return rootView;
     }
 
-    private void refreshFeedback(){
+    private void updateTime(){
+        endTime.set(Calendar.HOUR_OF_DAY, 23);
+        endTime.set(Calendar.MINUTE, 59);
+        endTime.set(Calendar.SECOND, 59);
+        startTime.set(endTime.get(Calendar.YEAR), endTime.get(Calendar.MONTH), endTime.get(Calendar.DATE),
+                0, 0, 0);
+    }
+
+    private void refreshFeedback(boolean refresh){
         //TODO
+        if(refresh)
+            updateTime();
     }
 }

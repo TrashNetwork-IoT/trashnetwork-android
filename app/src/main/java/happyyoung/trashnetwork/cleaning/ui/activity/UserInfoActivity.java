@@ -106,7 +106,7 @@ public class UserInfoActivity extends AppCompatActivity {
         if(user.getAccountType() == User.ACCOUNT_TYPE_CLEANER) {
             workRecordCard = new PreferenceCard(this)
                     .addGroup(getString(R.string.action_work_record))
-                    .addItem(R.drawable.ic_work, getString(R.string.action_view_more_records), null, null);
+                    .addItem(R.drawable.ic_history, getString(R.string.action_view_more_records), null, null);
             userInfoView.addView(workRecordCard.getView());
             getWorkRecords();
         }

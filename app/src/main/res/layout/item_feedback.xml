@@ -9,19 +9,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="@dimen/item_padding"
-        android:paddingStart="@dimen/item_padding"
-        android:paddingEnd="@dimen/item_padding">
+        android:padding="@dimen/item_padding">
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <com.github.akashandroid90.imageletter.MaterialLetterIcon
             android:id="@+id/feedback_portrait"
             android:layout_width="@dimen/large_icon_size"
             android:layout_height="@dimen/large_icon_size"
-            app:civ_border_width="1dp"
-            app:civ_fill_color="@color/grey_200"
-            app:civ_border_color="@android:color/white"
+            android:layout_centerVertical="true"
+            app:letter_color="@android:color/white"
+            app:letter_size="22"
+            app:shape_type="circle"
+            app:is_oval="false"
+            app:shape_color="@color/cyan_500"
+            app:letters_number="2"
             android:layout_marginEnd="@dimen/item_padding"
-            app:srcCompat="@drawable/ic_person"/>
+            />
 
         <LinearLayout
             android:layout_width="match_parent"

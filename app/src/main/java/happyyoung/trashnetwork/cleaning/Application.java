@@ -8,6 +8,8 @@ import android.support.v4.content.ContextCompat;
 
 import com.baidu.mapapi.SDKInitializer;
 
+import java.util.Random;
+
 import happyyoung.trashnetwork.cleaning.net.http.HttpApi;
 import happyyoung.trashnetwork.cleaning.service.MqttService;
 
@@ -29,6 +31,9 @@ public class Application extends com.activeandroid.app.Application {
 
     public static String MQTT_TOPIC_CHATTING = "Chatting";
 
+    public static int RANDOM_COLOR[];
+    private static Random colorRandom;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -48,6 +53,35 @@ public class Application extends com.activeandroid.app.Application {
         ACTION_CHAT_MESSAGE_RECEIVED_SAVED = getPackageName() + ".action.CHAT_MESSAGE_RECEIVED_SAVED";
         ACTION_SESSION_UPDATE = getPackageName() + ".action.SESSION_UPDATE";
         ACTION_LOCATION = getPackageName() + ".action.LOCATION_DETECTED";
+
+        RANDOM_COLOR = new int[]{
+                getResources().getColor(R.color.red_500),
+                getResources().getColor(R.color.grey_500),
+                getResources().getColor(R.color.green_500),
+                getResources().getColor(R.color.teal_500),
+                getResources().getColor(R.color.cyan_500),
+                getResources().getColor(R.color.orange_500),
+                getResources().getColor(R.color.light_blue_500),
+                getResources().getColor(R.color.blue_500),
+                getResources().getColor(R.color.light_green_500),
+                getResources().getColor(R.color.amber_500),
+                getResources().getColor(R.color.indigo_500),
+                getResources().getColor(R.color.pink_500),
+        };
+        colorRandom = new Random(System.currentTimeMillis());
+    }
+
+    public static int getRandomColor(){
+        return RANDOM_COLOR[colorRandom.nextInt(RANDOM_COLOR.length)];
+    }
+
+    public static int generateColorFromStr(String str){
+        int sum = 0;
+        if(str != null && !str.isEmpty()){
+            for(int i = 0; i < str.length(); i++)
+                sum += (int)str.charAt(i);
+        }
+        return RANDOM_COLOR[sum % RANDOM_COLOR.length];
     }
 
     public static void checkPermission(Activity activity, String permission){

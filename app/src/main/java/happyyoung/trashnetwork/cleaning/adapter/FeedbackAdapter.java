@@ -8,13 +8,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.akashandroid90.imageletter.MaterialLetterIcon;
+
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import happyyoung.trashnetwork.cleaning.Application;
 import happyyoung.trashnetwork.cleaning.R;
 import happyyoung.trashnetwork.cleaning.model.Feedback;
 import happyyoung.trashnetwork.cleaning.util.DateTimeUtil;
+import happyyoung.trashnetwork.cleaning.util.ImageUtil;
 
 /**
  * Created by shengyun-zhou <GGGZ-1101-28@Live.cn> on 2017-03-15
@@ -36,22 +40,32 @@ public class FeedbackAdapter extends RecyclerView.Adapter<FeedbackAdapter.Feedba
     @Override
     public void onBindViewHolder(FeedbackViewHolder holder, int position) {
         Feedback fb = feedbackList.get(position);
-        if(fb.getUserName() != null)
+        if(fb.getUserName() != null && !fb.getUserName().isEmpty()) {
+            holder.feedbackPortrait.setShapeColor(Application.generateColorFromStr(fb.getUserName()));
             holder.txtFeedbackUsername.setText(fb.getUserName());
-        else
+            holder.feedbackPortrait.setLettersNumber(2);
+            holder.feedbackPortrait.setLetter(fb.getUserName());
+        }else {
+            holder.feedbackPortrait.setShapeColor(Application.getRandomColor());
             holder.txtFeedbackUsername.setText(context.getString(R.string.anonymous_user));
+            holder.feedbackPortrait.setImageResource(R.drawable.ic_person_white_96dp);
+        }
         holder.txtFeedbackTime.setText(DateTimeUtil.convertTimestamp(context, fb.getFeedbackTime(), true, true, false));
         holder.txtFeedbackTitle.setText(fb.getTitle());
         holder.txtFeedbackContent.setText(fb.getTextContent());
     }
+
 
     @Override
     public int getItemCount() {
         return feedbackList.size();
     }
 
+
     class FeedbackViewHolder extends RecyclerView.ViewHolder{
-        @BindView(R.id.feedback_portrait) ImageView feedbackPortrait;
+
+        @BindView(R.id.feedback_portrait)
+        MaterialLetterIcon feedbackPortrait;
         @BindView(R.id.txt_feedback_username) TextView txtFeedbackUsername;
         @BindView(R.id.txt_feedback_time) TextView txtFeedbackTime;
         @BindView(R.id.txt_feedback_title) TextView txtFeedbackTitle;

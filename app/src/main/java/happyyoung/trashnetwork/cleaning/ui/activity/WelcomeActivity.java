@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 
@@ -74,6 +75,10 @@ public class WelcomeActivity extends AppCompatActivity {
                     @Override
                     public boolean onErrorResponse(int statusCode, Result errorInfo) {
                         startLoginActivity();
+                        if(statusCode == 401 && errorInfo.getResultCode() == 401){
+                            Toast.makeText(WelcomeActivity.this, errorInfo.getMessage(), Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
                         return false;
                     }
 

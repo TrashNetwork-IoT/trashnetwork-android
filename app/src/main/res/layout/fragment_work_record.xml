@@ -1,20 +1,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".cleaning.ui.fragment.WorkRecordFragment">
+    tools:context=".ui.fragment.WorkRecordFragment">
 
     <include android:id="@+id/widget_date_selection"
         layout="@layout/widget_date_selection"/>
 
-    <com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView
+    <com.malinskiy.superrecyclerview.SuperRecyclerView
         android:id="@+id/work_record_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/widget_date_selection"
-        android:scrollbars="vertical"
-        android:nestedScrollingEnabled="false" />
+        app:mainLayoutId="@layout/layout_recyclerview_verticalscroll"
+        app:scrollbarStyle="insideInset"
+        app:layout_moreProgress="@layout/recyclerview_loading" />
 
     <TextView
         android:id="@+id/txt_no_record"

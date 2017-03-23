@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.android.volley.AuthFailureError;
 
+import happyyoung.trashnetwork.cleaning.R;
 import happyyoung.trashnetwork.cleaning.net.DataCorruptionException;
 import happyyoung.trashnetwork.cleaning.util.GsonUtil;
 
@@ -34,8 +35,13 @@ public class HttpApiJsonRequest extends HttpApiRequest {
                 if(listener != null){
                     if(listener.onErrorResponse(statusCode, data))
                         return true;
-                    if(statusCode != 500)
+                    if(statusCode == 401 && listener.getParsedData().getResultCode() == 401){
+                        requireLoginAgain(context);
+                    }
+                    else if(statusCode != 500)
                         showError(context, listener.getParsedData().getMessage());
+                    else
+                        showError(context, context.getString(R.string.server_internal_error));
                 }
                 return false;
             }

@@ -6,8 +6,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -29,9 +27,7 @@
             android:value="2" />
         <meta-data
             android:name="AA_MODELS"
-            android:value="${applicationId}.database.model.LoginUserRecord,
-                           ${applicationId}.database.model.ChatMessageRecord,
-                           ${applicationId}.database.model.SessionRecord" />
+            android:value="${applicationId}.database.model.LoginUserRecord,                            ${applicationId}.database.model.ChatMessageRecord,                            ${applicationId}.database.model.SessionRecord" />
         <meta-data
             android:name="AA_SERIALIZERS"
             android:value="${applicationId}.database.serializer.BitmapSerializer" />
@@ -45,12 +41,15 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="@string/BAIDU_LBS_API_KEY" />
 
-        <activity android:name=".ui.activity.LoginActivity" />
+        <activity
+            android:name=".ui.activity.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.activity.WelcomeActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -74,6 +73,7 @@
             <intent-filter>
                 <action android:name="${applicationId}.action.CHAT_MESSAGE_RECEIVED" />
                 <action android:name="${applicationId}.action.CHAT_MESSAGE_SENT" />
+
                 <category android:name="${applicationId}" />
             </intent-filter>
         </receiver>
@@ -92,10 +92,12 @@
         <activity
             android:name=".ui.activity.UserInfoActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".ui.activity.TrashInfoActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.activity.AboutActivity"
+            android:label="@string/action_about"/>
     </application>
 
 </manifest>
