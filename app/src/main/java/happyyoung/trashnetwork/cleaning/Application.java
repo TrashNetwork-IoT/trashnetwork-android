@@ -30,6 +30,7 @@ public class Application extends com.activeandroid.app.Application {
     public static String ACTION_LOCATION;
 
     public static String MQTT_TOPIC_CHATTING = "Chatting";
+    public static String MQTT_TOPIC_CLEANER_LOCATION = "CleanerLocation";
 
     public static int RANDOM_COLOR[];
     private static Random colorRandom;

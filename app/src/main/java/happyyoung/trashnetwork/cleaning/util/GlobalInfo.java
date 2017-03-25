@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import happyyoung.trashnetwork.cleaning.database.model.SessionRecord;
+import happyyoung.trashnetwork.cleaning.model.Group;
 import happyyoung.trashnetwork.cleaning.model.Trash;
 import happyyoung.trashnetwork.cleaning.model.User;
 import happyyoung.trashnetwork.cleaning.model.UserLocation;
@@ -21,6 +22,7 @@ public class GlobalInfo {
     public static User user;
     public static List<User> groupWorkers = new ArrayList<>();
     public static List<Trash> trashList = new ArrayList<>();
+    public static List<Group> groupList = new ArrayList<>();
     public static SessionRecord currentSession;
     public static UserLocation currentLocation;
 

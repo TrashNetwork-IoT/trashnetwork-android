@@ -22,6 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import happyyoung.trashnetwork.cleaning.Application;
 import happyyoung.trashnetwork.cleaning.R;
+import happyyoung.trashnetwork.cleaning.model.Group;
 import happyyoung.trashnetwork.cleaning.service.MqttService;
 import happyyoung.trashnetwork.cleaning.ui.fragment.workgroup.ContactFragment;
 import happyyoung.trashnetwork.cleaning.ui.fragment.workgroup.MessageFragment;
@@ -122,10 +123,17 @@ public class WorkgroupFragment extends Fragment {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 try {
-                    ((MqttService.Binder) service).getService().addMQTTAction(new MqttService.MqttSubscriptionAction(
+                    MqttService mqttService = ((MqttService.Binder) service).getService();
+                    mqttService.addMQTTAction(new MqttService.MqttSubscriptionAction(
                             Application.MQTT_TOPIC_CHATTING, MqttService.TOPIC_TYPE_PRIVATE, GlobalInfo.user.getUserId(),
                             1, Application.ACTION_CHAT_MESSAGE_RECEIVED
                     ));
+                    for (Group g : GlobalInfo.groupList){
+                        mqttService.addMQTTAction(new MqttService.MqttSubscriptionAction(
+                                Application.MQTT_TOPIC_CHATTING, MqttService.TOPIC_TYPE_GROUP, g.getGroupId(),
+                                1, Application.ACTION_CHAT_MESSAGE_RECEIVED
+                        ));
+                    }
                     ((MqttService.Binder) service).getService().startWork(GlobalInfo.user.getUserId(),
                             GlobalInfo.token);
                 }catch (MqttException me){

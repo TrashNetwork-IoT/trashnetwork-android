@@ -63,4 +63,8 @@
     <string name="location">Location</string>
     <string name="action_view_more_records">View More Records</string>
     <string name="alert_loading">Loading…</string>
+
+    <string name="alert_posting_work_record">Posting new work record…</string>
+    <string name="alert_location_outdate">Your location info has been outdated,
+        please try again after your location is updated.</string>
 </resources>

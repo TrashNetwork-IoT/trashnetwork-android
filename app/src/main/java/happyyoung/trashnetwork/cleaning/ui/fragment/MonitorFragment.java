@@ -1,10 +1,13 @@
 package happyyoung.trashnetwork.cleaning.ui.fragment;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,6 +36,7 @@ import butterknife.OnClick;
 import happyyoung.trashnetwork.cleaning.Application;
 import happyyoung.trashnetwork.cleaning.R;
 import happyyoung.trashnetwork.cleaning.model.UserLocation;
+import happyyoung.trashnetwork.cleaning.service.MqttService;
 import happyyoung.trashnetwork.cleaning.util.DateTimeUtil;
 import happyyoung.trashnetwork.cleaning.util.GlobalInfo;
 import happyyoung.trashnetwork.cleaning.util.GsonUtil;
@@ -69,12 +73,25 @@ public class MonitorFragment extends Fragment {
     private GeoCoder cleanerLocationGeoCoder;
     private LocationReceiver locationReceiver;
 
+    private ServiceConnection mqttConn;
+
     public MonitorFragment() {
         // Required empty public constructor
     }
 
     public static MonitorFragment newInstance(Context context) {
         MonitorFragment fragment = new MonitorFragment();
+        fragment.mqttConn = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                MqttService mqttService = ((MqttService.Binder)service).getService();
+                mqttService.addMQTTAction(new MqttService.MqttSubscriptionAction(Application.MQTT_TOPIC_CLEANER_LOCATION,
+                        MqttService.TOPIC_TYPE_PUBLIC, null, 0, Application.ACTION_LOCATION));
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {}
+        };
         return fragment;
     }
 
@@ -166,6 +183,8 @@ public class MonitorFragment extends Fragment {
         rootView = null;
         userLocationGeoCoder.destroy();
         cleanerLocationGeoCoder.destroy();
+        if(mqttConn != null)
+            getContext().unbindService(mqttConn);
         super.onDestroy();
     }
 

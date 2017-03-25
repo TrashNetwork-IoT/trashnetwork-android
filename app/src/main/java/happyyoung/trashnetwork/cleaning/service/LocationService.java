@@ -1,7 +1,9 @@
 package happyyoung.trashnetwork.cleaning.service;
 
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -19,7 +21,9 @@ public class LocationService extends Service implements BDLocationListener {
     private final String TAG = "LocationService";
     private final int LOCATE_INTERVAL = 5000;
 
-    public LocationClient locationClient = null;
+    private LocationClient locationClient;
+    private MqttService mqttService;
+    private ServiceConnection mqttConn;
 
     @Override
     public void onCreate() {
@@ -37,6 +41,19 @@ public class LocationService extends Service implements BDLocationListener {
         option.setEnableSimulateGps(false);
         locationClient.setLocOption(option);
         locationClient.start();
+
+        mqttConn = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                mqttService = ((MqttService.Binder) service).getService();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                mqttService = null;
+            }
+        };
+        bindService(new Intent(this, MqttService.class), mqttConn, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -70,11 +87,17 @@ public class LocationService extends Service implements BDLocationListener {
         intent.addCategory(getPackageName());
         intent.putExtra(Application.BUNDLE_KEY_USER_LOCATION_DATA, GsonUtil.getGson().toJson(newLocation));
         sendBroadcast(intent);
+
+        if(mqttService == null)
+            return;
+        mqttService.addMQTTAction(new MqttService.MqttPublishAction(Application.MQTT_TOPIC_CLEANER_LOCATION,
+                MqttService.TOPIC_TYPE_PUBLIC, null, 0, GsonUtil.getGson().toJson(newLocation), null));
     }
 
     @Override
     public void onDestroy() {
         locationClient.stop();
+        unbindService(mqttConn);
         super.onDestroy();
     }
 }

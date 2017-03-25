@@ -11,12 +11,16 @@ import android.view.ViewGroup;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.ButterKnife;
 import happyyoung.trashnetwork.cleaning.R;
 import happyyoung.trashnetwork.cleaning.adapter.ContactListContactHolder;
 import happyyoung.trashnetwork.cleaning.adapter.ContactListRootHolder;
 import happyyoung.trashnetwork.cleaning.database.model.SessionRecord;
 import happyyoung.trashnetwork.cleaning.listener.ContactListener;
+import happyyoung.trashnetwork.cleaning.model.Group;
 import happyyoung.trashnetwork.cleaning.model.User;
 import happyyoung.trashnetwork.cleaning.ui.activity.ChatActivity;
 import happyyoung.trashnetwork.cleaning.util.GlobalInfo;
@@ -28,6 +32,9 @@ public class ContactFragment extends Fragment implements ContactListener {
     private TreeNode cleanerListRoot;
     private TreeNode managerListRoot;
     private TreeNode groupListRoot;
+
+    private Map<Long, Boolean> userIdUsedMap = new HashMap<>();
+    private Map<Long, Boolean> groupIdUsedMap = new HashMap<>();
 
     public ContactFragment() {
         // Required empty public constructor
@@ -59,6 +66,8 @@ public class ContactFragment extends Fragment implements ContactListener {
 
         for(User u : GlobalInfo.groupWorkers)
             onAddContact(u);
+        for(Group g : GlobalInfo.groupList)
+            onAddGroup(g);
         return rootView;
     }
 
@@ -66,6 +75,9 @@ public class ContactFragment extends Fragment implements ContactListener {
     public void onAddContact(final User newContact) {
         if(rootView == null)
             return;
+        if(userIdUsedMap.containsKey(newContact.getUserId()))
+            return;
+        userIdUsedMap.put(newContact.getUserId(), true);
         if(newContact.getAccountType() == User.ACCOUNT_TYPE_CLEANER) {
             cleanerListRoot.addChild(new TreeNode(new ContactListContactHolder.IconTextItem(newContact.getPortrait(), newContact.getName()))
                     .setViewHolder(new ContactListContactHolder(getContext(), new View.OnClickListener() {
@@ -87,6 +99,22 @@ public class ContactFragment extends Fragment implements ContactListener {
             ((ContactListRootHolder)managerListRoot.getViewHolder()).updateNodeView(
                     new ContactListRootHolder.IconTextItem(R.drawable.ic_contacts, getString(R.string.managers), managerListRoot.getChildren().size()));
         }
+    }
+
+    @Override
+    public void onAddGroup(final Group newGroup) {
+        if(rootView == null)
+            return;
+        if(groupIdUsedMap.containsKey(newGroup.getGroupId()))
+            return;
+        userIdUsedMap.put(newGroup.getGroupId(), true);
+        groupListRoot.addChild(new TreeNode(new TreeNode(new ContactListContactHolder.IconTextItem(newGroup.getPortrait(), newGroup.getName()))
+                .setViewHolder(new ContactListContactHolder(getContext(), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        enterChatting(SessionRecord.SESSION_TYPE_GROUP, newGroup.getGroupId());
+                    }
+                }))));
     }
 
     private void enterChatting(char sessionType, long sessionId){

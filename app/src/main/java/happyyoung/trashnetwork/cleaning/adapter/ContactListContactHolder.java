@@ -23,7 +23,7 @@ public class ContactListContactHolder extends TreeNode.BaseNodeViewHolder<Contac
     private View.OnClickListener mCLickListener;
 
     private View mViewRoot;
-    @BindView(R.id.contact_name) TextView txtContactName;
+    @BindView(R.id.txt_contact_name) TextView txtContactName;
     @BindView(R.id.contact_portrait) ImageView contactPortrait;
 
     public ContactListContactHolder(Context context, View.OnClickListener itemClicklistener) {

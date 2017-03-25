@@ -1,17 +1,20 @@
 package happyyoung.trashnetwork.cleaning.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.volley.Request;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BaiduMapOptions;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -20,13 +23,26 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.model.LatLng;
 
+import java.util.Date;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import happyyoung.trashnetwork.cleaning.R;
+import happyyoung.trashnetwork.cleaning.adapter.WorkRecordAdapter;
 import happyyoung.trashnetwork.cleaning.model.Trash;
 import happyyoung.trashnetwork.cleaning.model.User;
+import happyyoung.trashnetwork.cleaning.model.WorkRecord;
+import happyyoung.trashnetwork.cleaning.net.PublicResultCode;
+import happyyoung.trashnetwork.cleaning.net.http.HttpApi;
+import happyyoung.trashnetwork.cleaning.net.http.HttpApiJsonListener;
+import happyyoung.trashnetwork.cleaning.net.http.HttpApiJsonRequest;
+import happyyoung.trashnetwork.cleaning.net.model.result.Result;
+import happyyoung.trashnetwork.cleaning.net.model.result.WorkRecordListResult;
 import happyyoung.trashnetwork.cleaning.ui.widget.PreferenceCard;
+import happyyoung.trashnetwork.cleaning.util.DateTimeUtil;
 import happyyoung.trashnetwork.cleaning.util.GlobalInfo;
+import happyyoung.trashnetwork.cleaning.util.HttpUtil;
 import happyyoung.trashnetwork.cleaning.util.ImageUtil;
 
 public class TrashInfoActivity extends AppCompatActivity {
@@ -110,10 +126,72 @@ public class TrashInfoActivity extends AppCompatActivity {
 
         workRecordCard = new PreferenceCard(this)
                 .addGroup(getString(R.string.action_work_record))
-                .addItem(R.drawable.ic_history, getString(R.string.action_view_more_records), null, null);
+                .addItem(R.drawable.ic_history, getString(R.string.action_view_more_records), null, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(TrashInfoActivity.this, WorkRecordActivity.class);
+                        intent.putExtra(WorkRecordActivity.BUNDLE_KEY_TRASH_ID, trash.getTrashId());
+                        startActivity(intent);
+                    }
+                });
         trashInfoView.addView(workRecordCard.getView());
         if(GlobalInfo.user.getAccountType() != User.ACCOUNT_TYPE_CLEANER)
             btnClean.setVisibility(View.GONE);
+    }
+
+    @OnClick(R.id.btn_clean)
+    void onBtnCleanClick(){
+        HttpUtil.postWorkRecord(this, trash.getTrashId());
+    }
+
+    private void getWorkRecords(){
+        String url = HttpApi.getApiUrl(HttpApi.WorkRecordApi.QUERY_RECORD_BY_TRASH, trash.getTrashId().toString(), "" + 5);
+        final WorkRecordAdapter.OnItemClickListener listener = new WorkRecordAdapter.OnItemClickListener() {
+            @Override
+            public void onTrashViewClick(Trash t) {}
+
+            @Override
+            public void onCleanerViewClick(User u) {
+                Intent intent = new Intent(TrashInfoActivity.this, UserInfoActivity.class);
+                intent.putExtra(UserInfoActivity.BUNDLE_KEY_SHOW_CHATTING, true);
+                intent.putExtra(UserInfoActivity.BUNDLE_KEY_USER_ID, u.getUserId());
+                startActivity(intent);
+            }
+        };
+
+        HttpApi.startRequest(new HttpApiJsonRequest(this, url, Request.Method.GET, GlobalInfo.token, null,
+                new HttpApiJsonListener<WorkRecordListResult>(WorkRecordListResult.class) {
+                    @Override
+                    public void onResponse(WorkRecordListResult data) {
+                        for(WorkRecord wr : data.getWorkRecordList()){
+                            View v = LayoutInflater.from(TrashInfoActivity.this).inflate(R.layout.item_work_record_cleaner_view, trashInfoView, false);
+                            WorkRecordAdapter.bindViewHolder(wr, new WorkRecordAdapter.WorkRecordViewHolder(v),
+                                    WorkRecordAdapter.VIEW_TYPE_WORK_RECORD_CLEANER_VIEW, true, listener);
+                            workRecordCard.addCustomView(v);
+                        }
+                    }
+
+                    @Override
+                    public boolean onErrorResponse(int statusCode, Result errorInfo) {
+                        if(errorInfo.getResultCode() == PublicResultCode.WORK_RECORD_NOT_FOUND){
+                            workRecordCard.addItem(null, getString(R.string.no_record), null, null);
+                            return true;
+                        }
+                        return super.onErrorResponse(statusCode, errorInfo);
+                    }
+
+                    @Override
+                    public boolean onDataCorrupted(Throwable e) {
+                        workRecordCard.addItem(null, getString(R.string.no_record), null, null);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onNetworkError(Throwable e) {
+                        workRecordCard.addItem(null, getString(R.string.no_record), null, null);
+                        return false;
+                    }
+                }));
     }
 
     @Override

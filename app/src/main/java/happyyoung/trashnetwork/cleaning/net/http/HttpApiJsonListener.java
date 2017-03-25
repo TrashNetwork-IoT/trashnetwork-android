@@ -35,7 +35,9 @@ public abstract class HttpApiJsonListener<T extends Result> implements HttpListe
         }
     }
 
-    public abstract boolean onErrorResponse(int statusCode, Result errorInfo);
+    public boolean onErrorResponse(int statusCode, Result errorInfo){
+        return false;
+    }
 
     @Override
     public final boolean onErrorResponse(int statusCode, @NonNull byte[] data) throws DataCorruptionException {
@@ -45,5 +47,15 @@ public abstract class HttpApiJsonListener<T extends Result> implements HttpListe
         }catch (JsonSyntaxException jse){
             throw new DataCorruptionException(jse.getMessage(), jse);
         }
+    }
+
+    @Override
+    public boolean onDataCorrupted(Throwable e) {
+        return false;
+    }
+
+    @Override
+    public boolean onNetworkError(Throwable e) {
+        return false;
     }
 }

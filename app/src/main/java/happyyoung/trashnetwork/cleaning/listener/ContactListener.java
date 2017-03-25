@@ -1,5 +1,6 @@
 package happyyoung.trashnetwork.cleaning.listener;
 
+import happyyoung.trashnetwork.cleaning.model.Group;
 import happyyoung.trashnetwork.cleaning.model.User;
 
 /**
@@ -7,4 +8,5 @@ import happyyoung.trashnetwork.cleaning.model.User;
  */
 public interface ContactListener {
     void onAddContact(User newContact);
+    void onAddGroup(Group newGroup);
 }

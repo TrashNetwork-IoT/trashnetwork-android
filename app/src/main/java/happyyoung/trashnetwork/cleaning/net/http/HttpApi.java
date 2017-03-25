@@ -32,4 +32,21 @@ public class HttpApi {
         public static final String USER_INFO_BY_ID = "cleaning/account/user_info/by_id";
         public static final String ALL_GROUP_USERS = "cleaning/account/all_group_users";
     }
+
+    public static class GroupApi{
+        public static final String ALL_GROUPS = "cleaning/group/all_groups";
+        public static final String QUERY_BULLETIN = "cleaning/group/bulletin";
+        public static final String POST_BULLETIN = "cleaning/group/new_bulletin";
+    }
+
+    public static class WorkRecordApi{
+        public static final String QUERY_RECORD = "cleaning/work/record";
+        public static final String QUERY_RECORD_BY_USER = "cleaning/work/record/by_user";
+        public static final String QUERY_RECORD_BY_TRASH = "cleaning/work/record/by_trash";
+        public static final String POST_RECORD = "cleaning/work/new_record";
+    }
+
+    public static class FeedbackApi{
+        public static final String QUERY_FEEDBACK = "public/feedback/feedbacks";
+    }
 }

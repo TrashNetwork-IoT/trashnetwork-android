@@ -64,4 +64,8 @@ public class DateTimeUtil {
         return d1.getYear() == d2.getYear() && d1.getMonth() == d2.getMonth()
                 && d1.getDate() == d2.getDate();
     }
+
+    public static String getUnixTimestampStr(Date date){
+        return Long.toString(date.getTime() / 1000);
+    }
 }

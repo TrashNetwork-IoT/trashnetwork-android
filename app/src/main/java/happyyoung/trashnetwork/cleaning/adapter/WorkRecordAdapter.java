@@ -63,18 +63,33 @@ public class WorkRecordAdapter extends RecyclerView.Adapter<WorkRecordAdapter.Wo
     @Override
     public void onBindViewHolder(WorkRecordViewHolder holder, int position) {
         WorkRecord wr = workRecordList.get(position);
+        bindViewHolder(wr, holder, viewType, showDate, listener);
+    }
+
+    @Override
+    public int getItemCount() {
+        return workRecordList.size();
+    }
+
+    public interface OnItemClickListener{
+        void onTrashViewClick(Trash t);
+        void onCleanerViewClick(User u);
+    }
+
+    public static void bindViewHolder(WorkRecord wr, WorkRecordViewHolder holder,
+                                      int viewType, boolean showDate, @Nullable final OnItemClickListener listener){
         if(showDate) {
             holder.txtWorkRecordDate.setVisibility(View.VISIBLE);
-            holder.txtWorkRecordDate.setText(DateTimeUtil.convertTimestamp(context, wr.getRecordTime(), true, false));
+            holder.txtWorkRecordDate.setText(DateTimeUtil.convertTimestamp(holder.itemView.getContext(), wr.getRecordTime(), true, false));
         }else{
             holder.txtWorkRecordDate.setVisibility(View.GONE);
         }
-        holder.txtWorkRecordTime.setText(DateTimeUtil.convertTimestamp(context, wr.getRecordTime(), false, true, false));
+        holder.txtWorkRecordTime.setText(DateTimeUtil.convertTimestamp(holder.itemView.getContext(), wr.getRecordTime(), false, true, false));
         if(viewType == VIEW_TYPE_WORK_RECORD_TRASH_VIEW || viewType == VIEW_TYPE_WORK_RECORD_FULL){
             final Trash t = GlobalInfo.findTrashById(wr.getTrashId());
             if(t == null)
                 return;
-            holder.txtTrashName.setText(t.getTrashName(context));
+            holder.txtTrashName.setText(t.getTrashName(holder.itemView.getContext()));
             holder.txtTrashDesc.setText(t.getDescription());
             View v;
             if(viewType == VIEW_TYPE_WORK_RECORD_TRASH_VIEW)
@@ -110,17 +125,7 @@ public class WorkRecordAdapter extends RecyclerView.Adapter<WorkRecordAdapter.Wo
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return workRecordList.size();
-    }
-
-    public interface OnItemClickListener{
-        void onTrashViewClick(Trash t);
-        void onCleanerViewClick(User u);
-    }
-
-    class WorkRecordViewHolder extends RecyclerView.ViewHolder{
+    public static class WorkRecordViewHolder extends RecyclerView.ViewHolder{
         View itemView;
         @BindView(R.id.txt_work_record_time) TextView txtWorkRecordTime;
         @BindView(R.id.txt_work_record_date) TextView txtWorkRecordDate;

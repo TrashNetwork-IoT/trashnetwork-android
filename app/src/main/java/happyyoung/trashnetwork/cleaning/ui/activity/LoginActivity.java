@@ -37,6 +37,7 @@ import happyyoung.trashnetwork.cleaning.net.http.HttpApi;
 import happyyoung.trashnetwork.cleaning.net.http.HttpApiJsonListener;
 import happyyoung.trashnetwork.cleaning.net.http.HttpApiJsonRequest;
 import happyyoung.trashnetwork.cleaning.net.model.request.LoginRequest;
+import happyyoung.trashnetwork.cleaning.net.model.result.GroupListResult;
 import happyyoung.trashnetwork.cleaning.net.model.result.LoginResult;
 import happyyoung.trashnetwork.cleaning.net.model.result.Result;
 import happyyoung.trashnetwork.cleaning.net.model.result.UserListResult;
@@ -242,9 +243,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(UserListResult data) {
                 GlobalInfo.groupWorkers = data.getUserList();
-                Intent intent = new Intent(activity, MainActivity.class);
-                activity.startActivity(intent);
-                activity.finish();
+                getGroups(activity, listener);
             }
 
             @Override
@@ -262,6 +261,40 @@ public class LoginActivity extends AppCompatActivity {
                 return listener.onNetworkError(e);
             }
         }));
+    }
+
+    private static void getGroups(final Activity activity, final HttpApiJsonListener<Result> listener){
+        HttpApi.startRequest(new HttpApiJsonRequest(activity, HttpApi.getApiUrl(HttpApi.GroupApi.ALL_GROUPS), Request.Method.GET,
+                GlobalInfo.token, null, new HttpApiJsonListener<GroupListResult>(GroupListResult.class) {
+            @Override
+            public void onResponse(GroupListResult data) {
+                GlobalInfo.groupList = data.getGroupList();
+                enterMainActivity(activity);
+            }
+
+            @Override
+            public boolean onErrorResponse(int statusCode, Result errorInfo) {
+                enterMainActivity(activity);
+                return true;
+            }
+
+            @Override
+            public boolean onDataCorrupted(Throwable e) {
+                enterMainActivity(activity);
+                return true;
+            }
+
+            @Override
+            public boolean onNetworkError(Throwable e) {
+                return listener.onNetworkError(e);
+            }
+        }));
+    }
+
+    private static void enterMainActivity(Activity activity){
+        Intent intent = new Intent(activity, MainActivity.class);
+        activity.startActivity(intent);
+        activity.finish();
     }
 }
 
