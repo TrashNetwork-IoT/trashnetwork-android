@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:paddingStart="@dimen/activity_horizontal_margin"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
+            android:paddingBottom="@dimen/activity_vertical_margin">
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edit_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/title"
+                android:imeOptions="actionNext"
+                android:layout_marginBottom="@dimen/item_padding"
+                app:met_textColorHint="@color/grey_500"
+                app:met_underlineColor="@color/grey_500"
+                app:met_primaryColor="@color/colorAccent"
+                app:met_floatingLabelText="@string/title"
+                app:met_floatingLabel="highlight"
+                app:met_clearButton="true"/>
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edit_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/content"
+                android:imeOptions="actionDone"
+                app:met_textColorHint="@color/grey_500"
+                app:met_underlineColor="@color/grey_500"
+                app:met_primaryColor="@color/colorAccent"
+                app:met_floatingLabelText="@string/content"
+                app:met_floatingLabel="highlight"
+                app:met_clearButton="true"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

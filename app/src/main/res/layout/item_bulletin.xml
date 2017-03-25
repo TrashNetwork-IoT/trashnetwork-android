@@ -12,7 +12,7 @@
         android:padding="@dimen/item_padding">
 
         <com.github.akashandroid90.imageletter.MaterialLetterIcon
-            android:id="@+id/feedback_portrait"
+            android:id="@+id/bulletin_portrait"
             android:layout_width="@dimen/large_icon_size"
             android:layout_height="@dimen/large_icon_size"
             android:layout_centerVertical="true"
@@ -20,26 +20,27 @@
             app:letter_size="22"
             app:shape_type="circle"
             app:is_oval="false"
-            app:shape_color="@color/cyan_500"
+            app:shape_color="@color/grey_200"
             app:letters_number="2"
-            android:layout_marginEnd="@dimen/item_padding"
-            />
+            app:border_width="1dp"
+            app:border_color="@android:color/white"
+            android:layout_marginEnd="@dimen/item_padding" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_toEndOf="@+id/feedback_portrait"
+            android:layout_toEndOf="@+id/bulletin_portrait"
             android:layout_centerVertical="true">
 
-            <TextView android:id="@+id/txt_feedback_username"
+            <TextView android:id="@+id/txt_bulletin_username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/normal_text_size"
                 android:text="@string/anonymous_user"/>
 
-            <TextView android:id="@+id/txt_feedback_time"
+            <TextView android:id="@+id/txt_bulletin_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="17:00"
@@ -48,24 +49,24 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <TextView android:id="@+id/txt_feedback_title"
+    <TextView android:id="@+id/txt_bulletin_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/item_padding"
         android:layout_marginEnd="@dimen/item_padding"
         android:textSize="@dimen/large_text_size"
         android:textColor="@android:color/black"
-        android:text="Feedback Title"
+        android:text="Bulletin Title"
         android:textIsSelectable="true"/>
 
-    <TextView android:id="@+id/txt_feedback_content"
+    <TextView android:id="@+id/txt_bulletin_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/item_padding"
         android:layout_marginEnd="@dimen/item_padding"
         android:textSize="@dimen/normal_text_size"
         android:textColor="@android:color/black"
-        android:text="Feedback Content"
+        android:text="Bulletin Content"
         android:textIsSelectable="true"/>
 
     <View

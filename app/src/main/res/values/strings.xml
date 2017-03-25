@@ -31,6 +31,7 @@
 
     <string name="action_ok">OK</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_done">Done</string>
     <string name="exit_query">Are you sure to exit?</string>
 
     <string name="today">Today</string>
@@ -58,13 +59,23 @@
     <string name="no_feedback">No feedback</string>
     <string name="no_record">No record</string>
     <string name="trash">Trash</string>
-    <string name="action_send_message">Send Message</string>
-    <string name="phone_number">Phone Number</string>
+    <string name="action_send_message">Send message</string>
+    <string name="phone_number">Phone number</string>
     <string name="location">Location</string>
-    <string name="action_view_more_records">View More Records</string>
+    <string name="action_view_more_records">View more records</string>
     <string name="alert_loading">Loading…</string>
 
     <string name="alert_posting_work_record">Posting new work record…</string>
     <string name="alert_location_outdate">Your location info has been outdated,
         please try again after your location is updated.</string>
+    <string name="member">Member</string>
+    <string name="group_member_foramt">%d members</string>
+
+    <string name="bulletin">Bulletin</string>
+    <string name="action_view_more_bulletin">View more bulletin…</string>
+    <string name="action_post_bulletin">Post new bulletin</string>
+    <string name="no_bulletin">No bulletin</string>
+    <string name="new_bulletin">New bulletin</string>
+    <string name="title">Title</string>
+    <string name="content">Content</string>
 </resources>

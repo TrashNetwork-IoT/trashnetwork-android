@@ -184,8 +184,12 @@ public class WorkRecordFragment extends Fragment {
             @Override
             public boolean onErrorResponse(int statusCode, Result errorInfo) {
                 showContentView(false, refresh);
-                if(refresh && errorInfo.getResultCode() == PublicResultCode.WORK_RECORD_NOT_FOUND)
-                    return true;
+                if(errorInfo.getResultCode() == PublicResultCode.WORK_RECORD_NOT_FOUND) {
+                    if(!refresh)
+                        workRecordListView.setNumberBeforeMoreIsCalled(-1);
+                    else
+                        return true;
+                }
                 return super.onErrorResponse(statusCode, errorInfo);
             }
 

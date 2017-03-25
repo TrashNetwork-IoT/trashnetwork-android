@@ -56,4 +56,12 @@ public class GlobalInfo {
         }
         return null;
     }
+
+    public static Group findGroupById(long groupId){
+        for(Group g : groupList){
+            if(g.getGroupId() == groupId)
+                return g;
+        }
+        return null;
+    }
 }

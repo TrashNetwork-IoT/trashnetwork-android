@@ -49,7 +49,6 @@
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -73,7 +72,6 @@
             <intent-filter>
                 <action android:name="${applicationId}.action.CHAT_MESSAGE_RECEIVED" />
                 <action android:name="${applicationId}.action.CHAT_MESSAGE_SENT" />
-
                 <category android:name="${applicationId}" />
             </intent-filter>
         </receiver>
@@ -98,7 +96,15 @@
         <activity
             android:name=".ui.activity.AboutActivity"
             android:label="@string/action_about" />
-        <activity android:name=".ui.activity.WorkRecordActivity"/>
+        <activity android:name=".ui.activity.WorkRecordActivity" />
+        <activity
+            android:name=".ui.activity.GroupInfoActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.activity.BulletinActivity"
+            android:label="@string/bulletin" />
+        <activity android:name=".ui.activity.NewBulletinActivity"
+            android:label="@string/new_bulletin"/>
     </application>
 
 </manifest>
