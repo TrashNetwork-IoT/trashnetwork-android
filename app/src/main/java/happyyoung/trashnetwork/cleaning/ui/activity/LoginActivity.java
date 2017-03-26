@@ -73,29 +73,6 @@ public class LoginActivity extends AppCompatActivity {
         for(LoginUserRecord lur : loginRecords)
             loginIdRecords.add(Long.toString(lur.getUserId()));
         mIdView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, loginIdRecords));
-        mIdView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                try{
-                    if(!s.toString().isEmpty()) {
-                        long idNum = Long.valueOf(s.toString());
-                        for (LoginUserRecord lur : loginRecords) {
-                            if (lur.getUserId() == idNum) {
-                                mPortraitView.setImageBitmap(lur.getPortrait());
-                                return;
-                            }
-                        }
-                    }
-                }catch (NumberFormatException ignored){}
-                mPortraitView.setImageResource(R.mipmap.ic_launcher);
-            }
-        });
         long autoId = getIntent().getLongExtra(BUNDLE_KEY_AUTO_USER_ID, -1);
         if(autoId > 0)
             mIdView.setText(Long.toString(autoId));

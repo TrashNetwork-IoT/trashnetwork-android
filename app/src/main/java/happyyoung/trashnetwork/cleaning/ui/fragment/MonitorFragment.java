@@ -92,6 +92,7 @@ public class MonitorFragment extends Fragment {
             @Override
             public void onServiceDisconnected(ComponentName name) {}
         };
+        context.bindService(new Intent(context, MqttService.class), fragment.mqttConn, Context.BIND_AUTO_CREATE);
         return fragment;
     }
 
