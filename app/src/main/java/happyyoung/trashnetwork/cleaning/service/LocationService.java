@@ -12,6 +12,8 @@ import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 
+import java.util.Calendar;
+
 import happyyoung.trashnetwork.cleaning.Application;
 import happyyoung.trashnetwork.cleaning.model.UserLocation;
 import happyyoung.trashnetwork.cleaning.util.GlobalInfo;
@@ -20,16 +22,20 @@ import happyyoung.trashnetwork.cleaning.util.GsonUtil;
 public class LocationService extends Service implements BDLocationListener {
     private final String TAG = "LocationService";
     private final int LOCATE_INTERVAL = 5000;
+    private final int PUBLISH_INTERVAL = LOCATE_INTERVAL * 2;
 
     private LocationClient locationClient;
     private MqttService mqttService;
     private ServiceConnection mqttConn;
+    private Calendar publishTime;
 
     @Override
     public void onCreate() {
         super.onCreate();
         locationClient = new LocationClient(getApplicationContext());
         locationClient.registerLocationListener(this);
+        publishTime = Calendar.getInstance();
+        publishTime.setTimeInMillis(System.currentTimeMillis() - PUBLISH_INTERVAL);
 
         LocationClientOption option = new LocationClientOption();
         option.setCoorType("bd09ll");
@@ -83,15 +89,15 @@ public class LocationService extends Service implements BDLocationListener {
             return;
         UserLocation newLocation = new UserLocation(GlobalInfo.user.getUserId(), longitude, latitude);
         GlobalInfo.currentLocation = newLocation;
-        Intent intent = new Intent(Application.ACTION_LOCATION);
+        Intent intent = new Intent(Application.ACTION_SELF_LOCATION);
         intent.addCategory(getPackageName());
-        intent.putExtra(Application.BUNDLE_KEY_USER_LOCATION_DATA, GsonUtil.getGson().toJson(newLocation));
         sendBroadcast(intent);
 
-        if(mqttService == null)
+        if(mqttService == null || System.currentTimeMillis() - publishTime.getTimeInMillis() < PUBLISH_INTERVAL)
             return;
         mqttService.addMQTTAction(new MqttService.MqttPublishAction(Application.MQTT_TOPIC_CLEANER_LOCATION,
                 MqttService.TOPIC_TYPE_PUBLIC, null, 0, GsonUtil.getGson().toJson(newLocation), null));
+        publishTime.setTimeInMillis(System.currentTimeMillis());
     }
 
     @Override

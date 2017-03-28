@@ -19,7 +19,6 @@ import happyyoung.trashnetwork.cleaning.service.MqttService;
 public class Application extends com.activeandroid.app.Application {
     public static final String BUNDLE_KEY_CHAT_MSG_DB_ID = "MessageDBID";
     public static final String BUNDLE_KEY_SESSION_DB_ID = "SessionDBID";
-    public static final String BUNDLE_KEY_USER_LOCATION_DATA = "UserLocationData";
 
     public static String ACTION_CHAT_MESSAGE_SENT;
     public static String ACTION_CHAT_MESSAGE_SENT_SAVED;
@@ -27,7 +26,8 @@ public class Application extends com.activeandroid.app.Application {
     public static String ACTION_CHAT_MESSAGE_SEND_START;
     public static String ACTION_CHAT_MESSAGE_RECEIVED_SAVED;
     public static String ACTION_SESSION_UPDATE;
-    public static String ACTION_LOCATION;
+    public static String ACTION_SELF_LOCATION;
+    public static String ACTION_CLEANER_LOCATION;
 
     public static String MQTT_TOPIC_CHATTING = "Chatting";
     public static String MQTT_TOPIC_CLEANER_LOCATION = "CleanerLocation";
@@ -53,7 +53,8 @@ public class Application extends com.activeandroid.app.Application {
         ACTION_CHAT_MESSAGE_SEND_START = getPackageName() + ".action.CHAT_MESSAGE_SEND_START";
         ACTION_CHAT_MESSAGE_RECEIVED_SAVED = getPackageName() + ".action.CHAT_MESSAGE_RECEIVED_SAVED";
         ACTION_SESSION_UPDATE = getPackageName() + ".action.SESSION_UPDATE";
-        ACTION_LOCATION = getPackageName() + ".action.LOCATION_DETECTED";
+        ACTION_SELF_LOCATION = getPackageName() + ".action.SELF_LOCATION";
+        ACTION_CLEANER_LOCATION = getPackageName() + ".action.CLEANER_LOCATION";
 
         RANDOM_COLOR = new int[]{
                 getResources().getColor(R.color.red_500),

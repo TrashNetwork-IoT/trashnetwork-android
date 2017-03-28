@@ -20,7 +20,11 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,9 +38,13 @@ import happyyoung.trashnetwork.cleaning.ui.fragment.WorkRecordFragment;
 import happyyoung.trashnetwork.cleaning.ui.fragment.WorkgroupFragment;
 import happyyoung.trashnetwork.cleaning.util.DatabaseUtil;
 import happyyoung.trashnetwork.cleaning.util.GlobalInfo;
+import happyyoung.trashnetwork.cleaning.util.GsonUtil;
+import happyyoung.trashnetwork.cleaning.util.HttpUtil;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    public static final String QRCODE_ACTION_CLEANTRASH = "Clean trash";
+
     @BindView(R.id.toolbar_main) Toolbar toolbar;
     @BindView(R.id.nav_main) NavigationView navView;
     private View mNavHeaderView;
@@ -96,6 +104,32 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(intentResult == null) {
+            super.onActivityResult(requestCode, resultCode, data);
+            return;
+        }
+        String qrCodeData = intentResult.getContents();
+        if(qrCodeData == null || qrCodeData.isEmpty())
+            return;
+        try {
+            JsonElement parsedData = new JsonParser().parse(qrCodeData);
+            if(!parsedData.getAsJsonObject().has("action"))
+                return;
+            switch (parsedData.getAsJsonObject().get("action").getAsString()){
+                case QRCODE_ACTION_CLEANTRASH:
+                    if(GlobalInfo.user.getAccountType() != User.ACCOUNT_TYPE_CLEANER || !parsedData.getAsJsonObject().has("trash_id"))
+                        return;
+                    HttpUtil.postWorkRecord(this, parsedData.getAsJsonObject().get("trash_id").getAsLong());
+                    return;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -203,6 +237,8 @@ public class MainActivity extends AppCompatActivity
         new IntentIntegrator(this)
                 .setOrientationLocked(false)
                 .setCaptureActivity(ScanQRCodeActivity.class)
+                .setBarcodeImageEnabled(false)
+                .setBeepEnabled(false)
                 .initiateScan();
     }
 }

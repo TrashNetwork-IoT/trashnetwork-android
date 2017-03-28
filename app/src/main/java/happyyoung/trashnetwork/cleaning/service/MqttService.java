@@ -100,11 +100,14 @@ public class MqttService extends Service implements MqttCallback {
                                     mqttClient.subscribe(topic, ((MqttSubscriptionAction) mqttAction).qos, new IMqttMessageListener() {
                                         @Override
                                         public void messageArrived(String topic, MqttMessage message) throws Exception {
+
                                             if (((MqttSubscriptionAction) mqttActionClone).action != null && !((MqttSubscriptionAction) mqttActionClone).action.isEmpty()) {
+                                                String msg = new String(message.getPayload());
+                                                Log.i(TAG, "Message Arrived: " + msg);
                                                 Intent intent = new Intent(((MqttSubscriptionAction) mqttActionClone).action);
                                                 intent.addCategory(getPackageName());
                                                 parseTopic(topic, intent);
-                                                intent.putExtra(BUNDLE_KEY_MESSAGE, new String(message.getPayload()));
+                                                intent.putExtra(BUNDLE_KEY_MESSAGE, msg);
                                                 sendBroadcast(intent);
                                             }
                                         }
