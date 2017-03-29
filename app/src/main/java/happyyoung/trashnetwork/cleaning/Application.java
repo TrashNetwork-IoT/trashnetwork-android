@@ -28,9 +28,13 @@ public class Application extends com.activeandroid.app.Application {
     public static String ACTION_SESSION_UPDATE;
     public static String ACTION_SELF_LOCATION;
     public static String ACTION_CLEANER_LOCATION;
+    public static String ACTION_CLEAN_REMINDER;
+    public static String ACTION_LATEST_WORK_RECORD;
 
     public static String MQTT_TOPIC_CHATTING = "Chatting";
     public static String MQTT_TOPIC_CLEANER_LOCATION = "CleanerLocation";
+    public static String MQTT_TOPIC_LATEST_WORK_RECORD = "LatestWorkRecord";
+    public static String MQTT_TOPIC_CLEAN_REMINDER = "CleanReminder";
 
     public static int RANDOM_COLOR[];
     private static Random colorRandom;
@@ -55,6 +59,8 @@ public class Application extends com.activeandroid.app.Application {
         ACTION_SESSION_UPDATE = getPackageName() + ".action.SESSION_UPDATE";
         ACTION_SELF_LOCATION = getPackageName() + ".action.SELF_LOCATION";
         ACTION_CLEANER_LOCATION = getPackageName() + ".action.CLEANER_LOCATION";
+        ACTION_CLEAN_REMINDER = getPackageName() + ".action.CLEAN_REMINDER";
+        ACTION_LATEST_WORK_RECORD = getPackageName() + ".action.LATEST_WORK_RECORD";
 
         RANDOM_COLOR = new int[]{
                 getResources().getColor(R.color.red_500),

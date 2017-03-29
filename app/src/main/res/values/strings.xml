@@ -78,4 +78,7 @@
     <string name="new_bulletin">New bulletin</string>
     <string name="title">Title</string>
     <string name="content">Content</string>
+
+    <string name="cleaning_reminder">Cleaning Reminder</string>
+    <string name="cleaning_reminder_content_format">Trash #%d needs to be cleaned.</string>
 </resources>

@@ -60,8 +60,8 @@
             android:label="@string/action_settings" />
         <activity
             android:name=".ui.activity.ChatActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".ui.activity.MainActivity"/>
         <service
             android:name=".service.MqttService"
             android:exported="false" />
@@ -72,6 +72,15 @@
             <intent-filter>
                 <action android:name="${applicationId}.action.CHAT_MESSAGE_RECEIVED" />
                 <action android:name="${applicationId}.action.CHAT_MESSAGE_SENT" />
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receiver.CleanReminderReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="${applicationId}.action.CLEAN_REMINDER" />
                 <category android:name="${applicationId}" />
             </intent-filter>
         </receiver>
@@ -92,7 +101,10 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.activity.TrashInfoActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"/>
         <activity
             android:name=".ui.activity.AboutActivity"
             android:label="@string/action_about" />

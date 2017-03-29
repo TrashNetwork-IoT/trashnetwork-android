@@ -41,7 +41,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import happyyoung.trashnetwork.cleaning.Application;
 import happyyoung.trashnetwork.cleaning.R;
-import happyyoung.trashnetwork.cleaning.adapter.WorkRecordAdapter;
 import happyyoung.trashnetwork.cleaning.model.Trash;
 import happyyoung.trashnetwork.cleaning.model.User;
 import happyyoung.trashnetwork.cleaning.model.UserLocation;
@@ -105,6 +104,7 @@ public class MonitorFragment extends Fragment {
     private long currentShowTrashId = -1;
 
     private ServiceConnection mqttConn;
+    private WorkRecordReceiver workRecordReceiver;
 
     public MonitorFragment() {
         // Required empty public constructor
@@ -118,6 +118,10 @@ public class MonitorFragment extends Fragment {
                 MqttService mqttService = ((MqttService.Binder)service).getService();
                 mqttService.addMQTTAction(new MqttService.MqttSubscriptionAction(Application.MQTT_TOPIC_CLEANER_LOCATION,
                         MqttService.TOPIC_TYPE_PUBLIC, null, 0, Application.ACTION_CLEANER_LOCATION));
+                mqttService.addMQTTAction(new MqttService.MqttSubscriptionAction(Application.MQTT_TOPIC_CLEAN_REMINDER,
+                        MqttService.TOPIC_TYPE_PUBLIC, null, 0, Application.ACTION_CLEAN_REMINDER));
+                mqttService.addMQTTAction(new MqttService.MqttSubscriptionAction(Application.MQTT_TOPIC_LATEST_WORK_RECORD,
+                        MqttService.TOPIC_TYPE_PUBLIC, null, 0, Application.ACTION_LATEST_WORK_RECORD));
             }
 
             @Override
@@ -219,6 +223,11 @@ public class MonitorFragment extends Fragment {
         filter = new IntentFilter(Application.ACTION_CLEANER_LOCATION);
         filter.addCategory(getContext().getPackageName());
         getContext().registerReceiver(locationReceiver, filter);
+
+        workRecordReceiver = new WorkRecordReceiver();
+        filter = new IntentFilter(Application.ACTION_LATEST_WORK_RECORD);
+        filter.addCategory(getContext().getPackageName());
+        getContext().registerReceiver(workRecordReceiver, filter);
 
         return rootView;
     }
@@ -381,6 +390,13 @@ public class MonitorFragment extends Fragment {
                         if(trashMonitorView.getVisibility() == View.VISIBLE && currentShowTrashId == trashId)
                             showTrashInfo(trashId);
                     }
+
+                    @Override
+                    public boolean onErrorResponse(int statusCode, Result errorInfo) {
+                        if(errorInfo.getResultCode() == PublicResultCode.WORK_RECORD_NOT_FOUND)
+                            return true;
+                        return super.onErrorResponse(statusCode, errorInfo);
+                    }
                 }));
     }
 
@@ -395,6 +411,7 @@ public class MonitorFragment extends Fragment {
     @Override
     public void onDestroy() {
         mMapView.onDestroy();
+        getContext().unregisterReceiver(workRecordReceiver);
         getContext().unregisterReceiver(locationReceiver);
         rootView = null;
         userLocationGeoCoder.destroy();
@@ -428,6 +445,25 @@ public class MonitorFragment extends Fragment {
                 if(GlobalInfo.user.getUserId().equals(newLoc.getUserId()))
                     return;
                 updateCleanerLocation(newLoc);
+            }
+        }
+    }
+
+    private class WorkRecordReceiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                WorkRecord wr = GsonUtil.getGson().fromJson(intent.getStringExtra(MqttService.BUNDLE_KEY_MESSAGE), WorkRecord.class);
+                if(wr == null)
+                    return;
+                WorkRecord wr2 = trashWorkRecordMap.get(wr.getTrashId());
+                if(wr2 == null || wr2.getRecordTime().before(wr.getRecordTime())){
+                    trashWorkRecordMap.put(wr.getTrashId(), wr);
+                    if(trashMonitorView.getVisibility() == View.VISIBLE && wr.getTrashId() == currentShowTrashId)
+                        showTrashInfo(wr.getTrashId());
+                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
         }
     }

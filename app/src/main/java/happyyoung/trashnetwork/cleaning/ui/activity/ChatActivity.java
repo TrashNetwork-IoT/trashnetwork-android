@@ -1,5 +1,6 @@
 package happyyoung.trashnetwork.cleaning.ui.activity;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -35,6 +37,7 @@ import happyyoung.trashnetwork.cleaning.adapter.ChatMessageAdapter;
 import happyyoung.trashnetwork.cleaning.database.model.ChatMessageRecord;
 import happyyoung.trashnetwork.cleaning.database.model.SessionRecord;
 import happyyoung.trashnetwork.cleaning.model.User;
+import happyyoung.trashnetwork.cleaning.receiver.ChatMessageReceiver;
 import happyyoung.trashnetwork.cleaning.service.MqttService;
 import happyyoung.trashnetwork.cleaning.util.DatabaseUtil;
 import happyyoung.trashnetwork.cleaning.util.GlobalInfo;
@@ -108,6 +111,12 @@ public class ChatActivity extends AppCompatActivity {
         }
         chatListView.setAdapter(adapter);
         updateChatHistory();
+
+        if(session.equals(GlobalInfo.notificationSession)){
+            NotificationManager mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.cancel(ChatMessageReceiver.CHAT_MSG_NOTIFICATION_ID);
+            GlobalInfo.notificationSession = null;
+        }
 
         mqttServConn = new ServiceConnection() {
             @Override
@@ -285,8 +294,11 @@ public class ChatActivity extends AppCompatActivity {
                 return;
             if(newSessionFlag)
                 updateSession();
-            messageList.addLast(new ChatMessageAdapter.MessageItem(ChatMessageAdapter.MessageItem.POSITION_END, GlobalInfo.findUserById(cmr.getSenderId()), cmr));
+            boolean scrollFlag = ((LinearLayoutManager)chatListView.getLayoutManager()).findLastVisibleItemPosition() > messageList.size() - 3;
+            messageList.addLast(new ChatMessageAdapter.MessageItem(ChatMessageAdapter.MessageItem.POSITION_START, GlobalInfo.findUserById(cmr.getSenderId()), cmr));
             adapter.notifyItemInserted(messageList.size() - 1);
+            if(scrollFlag)
+                chatListView.smoothScrollToPosition(messageList.size() - 1);
         }
     }
 

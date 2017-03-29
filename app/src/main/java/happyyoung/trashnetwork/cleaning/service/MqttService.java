@@ -64,6 +64,8 @@ public class MqttService extends Service implements MqttCallback {
     }
 
     public void startWork(long userId, String password) throws MqttException {
+        if(mqttClient != null && mqttClient.isConnected())
+            return;
         String clientId = CLIENT_ID_PREFIX + userId;
         mqttClient = new MqttClient(BROKER_URL, clientId, new MemoryPersistence());
         mqttClient.setCallback(this);
@@ -100,7 +102,6 @@ public class MqttService extends Service implements MqttCallback {
                                     mqttClient.subscribe(topic, ((MqttSubscriptionAction) mqttAction).qos, new IMqttMessageListener() {
                                         @Override
                                         public void messageArrived(String topic, MqttMessage message) throws Exception {
-
                                             if (((MqttSubscriptionAction) mqttActionClone).action != null && !((MqttSubscriptionAction) mqttActionClone).action.isEmpty()) {
                                                 String msg = new String(message.getPayload());
                                                 Log.i(TAG, "Message Arrived: " + msg);
@@ -169,6 +170,8 @@ public class MqttService extends Service implements MqttCallback {
         cause.printStackTrace();
         while (!exitFlag) {
             try {
+                if(mqttClient.isConnected())
+                    break;
                 Log.i(TAG, "Trying to reconnect to MQTT broker...");
                 mqttClient.connect(connOpts);
                 Log.i(TAG, "Reconnected to MQTT broker.");

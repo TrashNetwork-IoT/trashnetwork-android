@@ -1,5 +1,6 @@
 package happyyoung.trashnetwork.cleaning.util;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 
@@ -24,19 +25,22 @@ public class GlobalInfo {
     public static List<Trash> trashList = new ArrayList<>();
     public static List<Group> groupList = new ArrayList<>();
     public static SessionRecord currentSession;
+    public static SessionRecord notificationSession;
     public static UserLocation currentLocation;
 
     public static void logout(Context context){
-        Intent mqttIntent = new Intent(context, MqttService.class);
-        context.stopService(mqttIntent);
+        context.stopService(new Intent(context, MqttService.class));
         if(user.getAccountType() == User.ACCOUNT_TYPE_CLEANER){
-            Intent locationIntent = new Intent(context, LocationService.class);
-            context.stopService(locationIntent);
+            context.stopService(new Intent(context, LocationService.class));
         }
         token = null;
         user = null;
         currentLocation = null;
+        currentSession = null;
+        notificationSession = null;
         groupWorkers.clear();
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancelAll();
     }
 
     public static User findUserById(long userId){
