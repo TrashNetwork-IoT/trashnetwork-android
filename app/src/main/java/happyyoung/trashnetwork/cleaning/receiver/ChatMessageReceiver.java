@@ -20,6 +20,7 @@ import happyyoung.trashnetwork.cleaning.model.Group;
 import happyyoung.trashnetwork.cleaning.model.User;
 import happyyoung.trashnetwork.cleaning.service.MqttService;
 import happyyoung.trashnetwork.cleaning.ui.activity.ChatActivity;
+import happyyoung.trashnetwork.cleaning.ui.activity.MainActivity;
 import happyyoung.trashnetwork.cleaning.ui.activity.TrashInfoActivity;
 import happyyoung.trashnetwork.cleaning.util.DatabaseUtil;
 import happyyoung.trashnetwork.cleaning.util.GlobalInfo;
@@ -125,10 +126,7 @@ public class ChatMessageReceiver extends BroadcastReceiver {
         Intent msgIntent = new Intent(context, ChatActivity.class);
         msgIntent.putExtra(ChatActivity.BUNDLE_KEY_SESSION_TYPE, newMessage.getSession().getSessionType());
         msgIntent.putExtra(ChatActivity.BUNDLE_KEY_SESSION_ID, newMessage.getSession().getSessionId());
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addParentStack(ChatActivity.class);
-        stackBuilder.addNextIntent(msgIntent);
-        mBuilder.setContentIntent(stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT));
+        mBuilder.setContentIntent(PendingIntent.getActivity(context, 0, msgIntent, 0));
 
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(CHAT_MSG_NOTIFICATION_ID, mBuilder.build());

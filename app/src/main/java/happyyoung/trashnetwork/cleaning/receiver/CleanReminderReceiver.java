@@ -46,9 +46,7 @@ public class CleanReminderReceiver extends BroadcastReceiver {
 
             Intent notifyIntent = new Intent(context, TrashInfoActivity.class);
             notifyIntent.putExtra(TrashInfoActivity.BUNDLE_KEY_TRASH_ID, trashId);
-            notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            PendingIntent notifyPendingIntent = PendingIntent.getActivity(context, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            mBuilder.setContentIntent(notifyPendingIntent);
+            mBuilder.setContentIntent(PendingIntent.getActivity(context, 0, notifyIntent, 0));
 
             NotificationManager mNotificationManager =
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

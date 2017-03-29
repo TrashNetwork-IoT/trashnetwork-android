@@ -60,8 +60,7 @@
             android:label="@string/action_settings" />
         <activity
             android:name=".ui.activity.ChatActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".ui.activity.MainActivity"/>
+            android:theme="@style/AppTheme.NoActionBar"/>
         <service
             android:name=".service.MqttService"
             android:exported="false" />
@@ -101,10 +100,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.activity.TrashInfoActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTask"
-            android:taskAffinity=""
-            android:excludeFromRecents="true"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.activity.AboutActivity"
             android:label="@string/action_about" />
