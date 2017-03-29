@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapPoi;
@@ -40,9 +41,19 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import happyyoung.trashnetwork.cleaning.Application;
 import happyyoung.trashnetwork.cleaning.R;
+import happyyoung.trashnetwork.cleaning.adapter.WorkRecordAdapter;
+import happyyoung.trashnetwork.cleaning.model.Trash;
 import happyyoung.trashnetwork.cleaning.model.User;
 import happyyoung.trashnetwork.cleaning.model.UserLocation;
+import happyyoung.trashnetwork.cleaning.model.WorkRecord;
+import happyyoung.trashnetwork.cleaning.net.PublicResultCode;
+import happyyoung.trashnetwork.cleaning.net.http.HttpApi;
+import happyyoung.trashnetwork.cleaning.net.http.HttpApiJsonListener;
+import happyyoung.trashnetwork.cleaning.net.http.HttpApiJsonRequest;
+import happyyoung.trashnetwork.cleaning.net.model.result.Result;
+import happyyoung.trashnetwork.cleaning.net.model.result.WorkRecordListResult;
 import happyyoung.trashnetwork.cleaning.service.MqttService;
+import happyyoung.trashnetwork.cleaning.ui.activity.TrashInfoActivity;
 import happyyoung.trashnetwork.cleaning.ui.activity.UserInfoActivity;
 import happyyoung.trashnetwork.cleaning.util.DateTimeUtil;
 import happyyoung.trashnetwork.cleaning.util.GlobalInfo;
@@ -53,6 +64,7 @@ public class MonitorFragment extends Fragment {
     private static final String LOG_TAG_GEO_CODER = "GeoCoder";
     private static final String BUNDLE_KEY_MARKER_TYPE = "MarkerType";
     private static final String BUNDLE_KEY_USER_ID = "UserID";
+    private static final String BUNDLE_KEY_TRASH_ID = "TrashID";
     private static final int MARKER_TYPE_USER = 1;
     private static final int MARKER_TYPE_CLEANER = 2;
     private static final int MARKER_TYPE_TRASH = 3;
@@ -88,6 +100,9 @@ public class MonitorFragment extends Fragment {
     private GeoCoder userLocationGeoCoder;
     private GeoCoder cleanerLocationGeoCoder;
     private LocationReceiver locationReceiver;
+
+    private Map<Long, WorkRecord> trashWorkRecordMap = new HashMap<>();
+    private long currentShowTrashId = -1;
 
     private ServiceConnection mqttConn;
 
@@ -126,9 +141,7 @@ public class MonitorFragment extends Fragment {
             @Override
             public void onMapClick(LatLng latLng) {
                 if(GlobalInfo.user.getAccountType() == User.ACCOUNT_TYPE_CLEANER) {
-                    cleanerLocationView.setVisibility(View.GONE);
-                    trashMonitorView.setVisibility(View.GONE);
-                    showUserLocationInfo();
+                    showUserLocationInfo(true);
                 }
             }
 
@@ -143,9 +156,14 @@ public class MonitorFragment extends Fragment {
                 Bundle bundle = marker.getExtraInfo();
                 switch (bundle.getInt(BUNDLE_KEY_MARKER_TYPE)){
                     case MARKER_TYPE_USER:
-                        showUserLocationInfo();
+                        showUserLocationInfo(true);
+                        break;
                     case MARKER_TYPE_CLEANER:
-                        showCleanerLocation(bundle.getLong(BUNDLE_KEY_USER_ID));
+                        showCleanerLocation(bundle.getLong(BUNDLE_KEY_USER_ID), true);
+                        break;
+                    case MARKER_TYPE_TRASH:
+                        showTrashInfo(bundle.getLong(BUNDLE_KEY_TRASH_ID));
+                        break;
                 }
                 return true;
             }
@@ -180,15 +198,19 @@ public class MonitorFragment extends Fragment {
                 txtCleanerLocation.setText(reverseGeoCodeResult.getAddress());
             }
         });
-        cleanerLocationView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), UserInfoActivity.class);
-                intent.putExtra(UserInfoActivity.BUNDLE_KEY_SHOW_CHATTING, true);
-                intent.putExtra(UserInfoActivity.BUNDLE_KEY_USER_ID, currentShowCleanerId);
-                startActivity(intent);
-            }
-        });
+
+        MarkerOptions trashMarkerOpts = new MarkerOptions()
+                .alpha(0.9f)
+                .draggable(false)
+                .icon(BitmapDescriptorFactory.fromBitmap(ImageUtil.getBitmapFromDrawable(getContext(), R.drawable.ic_delete_green_32dp)));
+        for(Trash t : GlobalInfo.trashList){
+            trashMarkerOpts.position(new LatLng(t.getLatitude(), t.getLongitude()));
+            Marker trashMarker = (Marker) baiduMap.addOverlay(trashMarkerOpts);
+            Bundle extraInfo = new Bundle();
+            extraInfo.putInt(BUNDLE_KEY_MARKER_TYPE, MARKER_TYPE_TRASH);
+            extraInfo.putLong(BUNDLE_KEY_TRASH_ID, t.getTrashId());
+            trashMarker.setExtraInfo(extraInfo);
+        }
 
         locationReceiver = new LocationReceiver();
         IntentFilter filter = new IntentFilter(Application.ACTION_SELF_LOCATION);
@@ -207,6 +229,16 @@ public class MonitorFragment extends Fragment {
                 new LatLng(GlobalInfo.currentLocation.getLatitude(),
                         GlobalInfo.currentLocation.getLongitude())
         ));
+    }
+
+    @OnClick(R.id.cleaner_view_area)
+    void onCleanerLocationViewClick(View v){
+        enterUserInfoActivity(currentShowCleanerId);
+    }
+
+    @OnClick(R.id.trash_view_area)
+    void onTrashMonitorViewClick(View v){
+        enterTrashInfoActivity(currentShowTrashId);
     }
 
     private void updateUserLocation(){
@@ -230,14 +262,20 @@ public class MonitorFragment extends Fragment {
         }
         if(cleanerLocationView.getVisibility() == View.VISIBLE || trashMonitorView.getVisibility() == View.VISIBLE)
             return;
-        showUserLocationInfo();
+        showUserLocationInfo(false);
     }
 
-    private void showUserLocationInfo(){
-        LatLng pos = new LatLng(GlobalInfo.currentLocation.getLatitude(), GlobalInfo.currentLocation.getLongitude());
-        userLocationView.setVisibility(View.VISIBLE);
-        txtUserUpdateTime.setText(DateTimeUtil.convertTimestamp(getContext(), GlobalInfo.currentLocation.getUpdateTime(), true, true, true));
-        userLocationGeoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(pos));
+    private void showUserLocationInfo(boolean fromUser){
+        if(GlobalInfo.currentLocation == null)
+            return;
+        cleanerLocationView.setVisibility(View.GONE);
+        trashMonitorView.setVisibility(View.GONE);
+        if(userLocationView.getVisibility() != View.VISIBLE || !fromUser){
+            LatLng pos = new LatLng(GlobalInfo.currentLocation.getLatitude(), GlobalInfo.currentLocation.getLongitude());
+            userLocationView.setVisibility(View.VISIBLE);
+            txtUserUpdateTime.setText(DateTimeUtil.convertTimestamp(getContext(), GlobalInfo.currentLocation.getUpdateTime(), true, true, true));
+            userLocationGeoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(pos));
+        }
     }
 
     private void updateCleanerLocation(UserLocation newLoc){
@@ -267,21 +305,83 @@ public class MonitorFragment extends Fragment {
             mapCenterFlag = true;
         }
         if(cleanerLocationView.getVisibility() == View.VISIBLE && newLoc.getUserId() == currentShowCleanerId)
-            showCleanerLocation(newLoc.getUserId());
+            showCleanerLocation(newLoc.getUserId(), false);
     }
 
-    private void showCleanerLocation(long cleanerId){
+    private void showCleanerLocation(long cleanerId, boolean fromUser){
         User u = GlobalInfo.findUserById(cleanerId);
         if(u == null)
             return;
         UserLocation loc = cleanerLocationMap.get(cleanerId);
         currentShowCleanerId = cleanerId;
-        cleanerLocationView.setVisibility(View.VISIBLE);
-        cleanerPortrait.setImageBitmap(u.getPortrait());
-        txtCleanerName.setText(u.getName());
-        txtCleanerUpdateTime.setText(DateTimeUtil.convertTimestamp(getContext(), loc.getUpdateTime(), true, true, true));
-        LatLng pos = new LatLng(loc.getLatitude(), loc.getLongitude());
-        cleanerLocationGeoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(pos));
+        userLocationView.setVisibility(View.GONE);
+        trashMonitorView.setVisibility(View.GONE);
+        if(cleanerLocationView.getVisibility() != View.VISIBLE || !fromUser){
+            cleanerLocationView.setVisibility(View.VISIBLE);
+            cleanerPortrait.setImageBitmap(u.getPortrait());
+            txtCleanerName.setText(u.getName());
+            txtCleanerUpdateTime.setText(DateTimeUtil.convertTimestamp(getContext(), loc.getUpdateTime(), true, true, true));
+            LatLng pos = new LatLng(loc.getLatitude(), loc.getLongitude());
+            cleanerLocationGeoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(pos));
+        }
+    }
+
+    private void showTrashInfo(long trashId){
+        Trash t = GlobalInfo.findTrashById(trashId);
+        if(t == null)
+            return;
+        currentShowTrashId = trashId;
+        userLocationView.setVisibility(View.GONE);
+        cleanerLocationView.setVisibility(View.GONE);
+        trashMonitorView.setVisibility(View.VISIBLE);
+        txtTrashName.setText(t.getTrashName(getContext()));
+        txtTrashDesc.setText(t.getDescription());
+        WorkRecord wr = trashWorkRecordMap.get(trashId);
+        if(wr != null){
+            final User u = GlobalInfo.findUserById(wr.getCleanerId());
+            if(u == null)
+                return;
+            txtTrashCleanedTime.setText(DateTimeUtil.convertTimestamp(getContext(), wr.getRecordTime(), true, true, false));
+            trashCleanerPortrait.setImageBitmap(u.getPortrait());
+            trashCleanerPortrait.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    enterUserInfoActivity(u.getUserId());
+                }
+            });
+        }else{
+            getLatestWorkRecord(trashId);
+        }
+
+    }
+
+    private void enterUserInfoActivity(long userId){
+        Intent intent = new Intent(getContext(), UserInfoActivity.class);
+        intent.putExtra(UserInfoActivity.BUNDLE_KEY_SHOW_CHATTING, true);
+        intent.putExtra(UserInfoActivity.BUNDLE_KEY_USER_ID, userId);
+        startActivity(intent);
+    }
+
+    private void enterTrashInfoActivity(long trashId){
+        Intent intent = new Intent(getContext(), TrashInfoActivity.class);
+        intent.putExtra(TrashInfoActivity.BUNDLE_KEY_TRASH_ID, trashId);
+        startActivity(intent);
+    }
+
+    private void getLatestWorkRecord(final long trashId){
+        String url = HttpApi.getApiUrl(HttpApi.WorkRecordApi.QUERY_RECORD_BY_TRASH, Long.toString(trashId), "" + 1);
+        HttpApi.startRequest(new HttpApiJsonRequest(getActivity(), url, Request.Method.GET, GlobalInfo.token, null,
+                new HttpApiJsonListener<WorkRecordListResult>(WorkRecordListResult.class) {
+                    @Override
+                    public void onResponse(WorkRecordListResult data) {
+                        WorkRecord wr = trashWorkRecordMap.get(trashId);
+                        if(wr != null && wr.getRecordTime().after(data.getWorkRecordList().get(0).getRecordTime()))
+                            return;
+                        trashWorkRecordMap.put(trashId, data.getWorkRecordList().get(0));
+                        if(trashMonitorView.getVisibility() == View.VISIBLE && currentShowTrashId == trashId)
+                            showTrashInfo(trashId);
+                    }
+                }));
     }
 
     private void showGeoCoderError(ReverseGeoCodeResult reverseGeoCodeResult){
