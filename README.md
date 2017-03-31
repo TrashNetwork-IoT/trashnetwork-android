@@ -11,5 +11,5 @@ Before building, you should set the following properties in `gradle.properties`:
 + `TN_KEYSTORE_PASSWORD`: Password of `TN_KEYSTORE_FILE`.
 + `TN_KEYSTORE_ALIAS_NAME`: An alias that exist in `TN_KEYSTORE_FILE`.
 + `TN_KEYSTORE_ALIAS_PASSWORD`: Password of `TN_KEYSTORE_ALIAS_NAME`.
-+ `BAIDU_LBS_API_KEY`: The API key of Baidu Map, for more details about Baidu Map SDK, visit [http://lbsyun.baidu.com](http://lbsyun.baidu.com)
++ `AMAP_LBS_API_KEY`: The API key of AMap, for more details about AMap SDK, visit [http://lbs.amap.com](http://lbs.amap.com)
 

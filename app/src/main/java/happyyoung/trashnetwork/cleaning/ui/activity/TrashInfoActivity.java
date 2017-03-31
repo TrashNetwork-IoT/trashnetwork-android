@@ -2,6 +2,7 @@ package happyyoung.trashnetwork.cleaning.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -14,16 +15,15 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMapOptions;
+import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.MapView;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.CameraPosition;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.MarkerOptions;
 import com.android.volley.Request;
-import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BaiduMapOptions;
-import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.MapStatusUpdateFactory;
-import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.model.LatLng;
-
-import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -100,23 +100,25 @@ public class TrashInfoActivity extends AppCompatActivity {
 
         locationCard = new PreferenceCard(this)
                 .addGroup(getString(R.string.location));
-        BaiduMapOptions options = new BaiduMapOptions();
-        options.zoomControlsEnabled(false);
-        options.scrollGesturesEnabled(false);
+        AMapOptions options = new AMapOptions()
+                .zoomControlsEnabled(false)
+                .scrollGesturesEnabled(false)
+                .rotateGesturesEnabled(false);
         mapView = new MapView(this, options);
+        mapView.onSaveInstanceState(savedInstanceState);
         mapView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 getResources().getDimensionPixelSize(R.dimen.trash_info_map_height)));
         locationCard.addCustomView(mapView);
-        BaiduMap bmap = mapView.getMap();
+        AMap amap = mapView.getMap();
         LatLng pos = new LatLng(trash.getLatitude(), trash.getLongitude());
-        bmap.setMapStatus(MapStatusUpdateFactory.newLatLng(pos));
-        bmap.setMapStatus(MapStatusUpdateFactory.zoomTo(19));
-        bmap.addOverlay(new MarkerOptions()
+        amap.moveCamera(CameraUpdateFactory.newCameraPosition(
+                new CameraPosition(pos, 18, 0, 0)
+        ));
+        amap.addMarker(new MarkerOptions()
                         .draggable(false)
                         .alpha((float) 0.9)
                         .position(pos)
-                        .icon(BitmapDescriptorFactory.fromBitmap(ImageUtil.getBitmapFromDrawable(this, R.drawable.ic_location_red))));
-
+                        .icon(BitmapDescriptorFactory.fromBitmap(ImageUtil.getBitmapFromDrawable(this, R.drawable.ic_delete_green_32dp))));
 
         View v = locationCard.getView();
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -137,6 +139,7 @@ public class TrashInfoActivity extends AppCompatActivity {
         trashInfoView.addView(workRecordCard.getView());
         if(GlobalInfo.user.getAccountType() != User.ACCOUNT_TYPE_CLEANER)
             btnClean.setVisibility(View.GONE);
+        getWorkRecords();
     }
 
     @OnClick(R.id.btn_clean)
@@ -210,6 +213,12 @@ public class TrashInfoActivity extends AppCompatActivity {
     protected void onDestroy() {
         mapView.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        mapView.onSaveInstanceState(outState);
     }
 
     @Override

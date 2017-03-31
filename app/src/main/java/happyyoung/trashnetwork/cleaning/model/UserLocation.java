@@ -9,26 +9,23 @@ public class UserLocation {
     private Long userId;
     private Double longitude;
     private Double latitude;
+    private String address;
     private Date updateTime;
 
-    public UserLocation(Long userId, Double longitude, Double latitude, Date updateTime) {
+    public UserLocation(Long userId, Double longitude, Double latitude, Date updateTime, String address) {
         this.userId = userId;
         this.longitude = longitude;
         this.latitude = latitude;
         this.updateTime = updateTime;
+        this.address = address;
     }
 
-    public UserLocation(Long userId, Double longitude, Double latitude) {
-        this(userId, longitude, latitude, new Date());
+    public UserLocation(Long userId, Double longitude, Double latitude, String address) {
+        this(userId, longitude, latitude, new Date(), address);
     }
-
 
     public Long getUserId() {
         return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 
     public Double getLongitude() {
@@ -53,5 +50,13 @@ public class UserLocation {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

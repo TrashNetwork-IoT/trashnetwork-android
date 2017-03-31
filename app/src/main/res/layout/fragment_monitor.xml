@@ -5,8 +5,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragment.MonitorFragment">
 
-    <com.baidu.mapapi.map.MapView
-        android:id="@+id/bmap_view"
+    <com.amap.api.maps.MapView
+        android:id="@+id/amap_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clickable="true"/>

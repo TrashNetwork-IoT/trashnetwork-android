@@ -6,8 +6,7 @@ import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
-import com.baidu.mapapi.SDKInitializer;
-
+import java.util.ArrayList;
 import java.util.Random;
 
 import happyyoung.trashnetwork.cleaning.net.http.HttpApi;
@@ -42,7 +41,6 @@ public class Application extends com.activeandroid.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        SDKInitializer.initialize(getApplicationContext());
         try {
             ApplicationInfo appInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
             HttpApi.BASE_URL_V1 = appInfo.metaData.getString("TN_HTTP_API_BASE_URL_V1");
@@ -92,12 +90,18 @@ public class Application extends com.activeandroid.app.Application {
         return RANDOM_COLOR[sum % RANDOM_COLOR.length];
     }
 
-    public static void checkPermission(Activity activity, String permission){
-        if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
-                return;
+    public static void checkPermission(Activity activity, String[] permissions){
+        ArrayList<String> permCheckList = new ArrayList<>();
+        for(String perm : permissions){
+            if (ContextCompat.checkSelfPermission(activity, perm) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(activity, perm)) {
+                    continue;
+                }
+                permCheckList.add(perm);
             }
-            ActivityCompat.requestPermissions(activity, new String[]{permission}, 0);
         }
+        if(permCheckList.isEmpty())
+            return;
+        ActivityCompat.requestPermissions(activity, permCheckList.toArray(new String[permCheckList.size()]), 0);
     }
 }

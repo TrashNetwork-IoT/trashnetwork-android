@@ -26,6 +26,8 @@ import com.google.gson.JsonSyntaxException;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import happyyoung.trashnetwork.cleaning.Application;
@@ -93,12 +95,14 @@ public class MainActivity extends AppCompatActivity
                    .commit();
         onNavigationItemSelected(navView.getMenu().getItem(0));
 
+        ArrayList<String> permCheckList = new ArrayList<>();
+        permCheckList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if(GlobalInfo.user.getAccountType() == User.ACCOUNT_TYPE_CLEANER){
-            Application.checkPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
-            Application.checkPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+            permCheckList.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+            permCheckList.add(Manifest.permission.ACCESS_FINE_LOCATION);
             startService(new Intent(this, LocationService.class));
         }
-        Application.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        Application.checkPermission(this, permCheckList.toArray(new String[permCheckList.size()]));
     }
 
     @Override

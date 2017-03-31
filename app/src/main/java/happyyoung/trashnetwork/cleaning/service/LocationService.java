@@ -7,24 +7,25 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.baidu.location.BDLocation;
-import com.baidu.location.BDLocationListener;
-import com.baidu.location.LocationClient;
-import com.baidu.location.LocationClientOption;
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import happyyoung.trashnetwork.cleaning.Application;
 import happyyoung.trashnetwork.cleaning.model.UserLocation;
 import happyyoung.trashnetwork.cleaning.util.GlobalInfo;
 import happyyoung.trashnetwork.cleaning.util.GsonUtil;
 
-public class LocationService extends Service implements BDLocationListener {
+public class LocationService extends Service implements AMapLocationListener {
     private final String TAG = "LocationService";
     private final int LOCATE_INTERVAL = 5000;
     private final int PUBLISH_INTERVAL = LOCATE_INTERVAL * 2;
 
-    private LocationClient locationClient;
+    private AMapLocationClient locationClient;
     private MqttService mqttService;
     private ServiceConnection mqttConn;
     private Calendar publishTime;
@@ -32,21 +33,22 @@ public class LocationService extends Service implements BDLocationListener {
     @Override
     public void onCreate() {
         super.onCreate();
-        locationClient = new LocationClient(getApplicationContext());
-        locationClient.registerLocationListener(this);
+        locationClient = new AMapLocationClient(getApplicationContext());
+        locationClient.setLocationListener(this);
         publishTime = Calendar.getInstance();
         publishTime.setTimeInMillis(System.currentTimeMillis() - PUBLISH_INTERVAL);
 
-        LocationClientOption option = new LocationClientOption();
-        option.setCoorType("bd09ll");
-        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
-        option.setScanSpan(LOCATE_INTERVAL);
-        option.setOpenGps(true);
-        option.setIgnoreKillProcess(false);
-        option.SetIgnoreCacheException(true);
-        option.setEnableSimulateGps(false);
-        locationClient.setLocOption(option);
-        locationClient.start();
+        AMapLocationClientOption opt = new AMapLocationClientOption()
+                .setInterval(LOCATE_INTERVAL)
+                .setKillProcess(true)
+                .setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy)
+                .setNeedAddress(true);
+        opt.setWifiActiveScan(true);
+        opt.setMockEnable(false);
+        opt.setHttpTimeOut(15000);
+        opt.setLocationCacheEnable(true);
+        locationClient.setLocationOption(opt);
+        locationClient.startLocation();
 
         mqttConn = new ServiceConnection() {
             @Override
@@ -68,26 +70,23 @@ public class LocationService extends Service implements BDLocationListener {
     }
 
     @Override
-    public void onReceiveLocation(BDLocation bdLocation) {
-        if(bdLocation.getLocType() == BDLocation.TypeServerError) {
-            Log.e(TAG, "Locate error due to server error");
-        }else if(bdLocation.getLocType() == BDLocation.TypeNetWorkException){
-            Log.e(TAG, "Locate error due to network exception");
-        }else if(bdLocation.getLocType() == BDLocation.TypeCriteriaException){
-            Log.e(TAG, "Locate error due to criteria exception");
-        }else if(bdLocation.getLocType() == BDLocation.TypeNetWorkLocation ||
-                 bdLocation.getLocType() == BDLocation.TypeGpsLocation){
-            sendLocation(bdLocation.getLongitude(), bdLocation.getLatitude());
+    public void onLocationChanged(AMapLocation aMapLocation) {
+        if(aMapLocation == null)
+            return;
+        if (aMapLocation.getErrorCode() == 0) {
+            if(GlobalInfo.user == null)
+                return;
+            UserLocation newLoc = new UserLocation(GlobalInfo.user.getUserId(), aMapLocation.getLongitude(),
+                    aMapLocation.getLatitude(), new Date(aMapLocation.getTime()),
+                    aMapLocation.getAddress());
+            sendLocation(newLoc);
+        }else {
+            Log.e(TAG, "location Error, ErrCode:" + aMapLocation.getErrorCode() + ", errInfo:"
+                    + aMapLocation.getErrorInfo());
         }
     }
 
-    @Override
-    public void onConnectHotSpotMessage(String s, int i) {}
-
-    private void sendLocation(double longitude, double latitude) {
-        if(GlobalInfo.user == null)
-            return;
-        UserLocation newLocation = new UserLocation(GlobalInfo.user.getUserId(), longitude, latitude);
+    private void sendLocation(UserLocation newLocation) {
         GlobalInfo.currentLocation = newLocation;
         Intent intent = new Intent(Application.ACTION_SELF_LOCATION);
         intent.addCategory(getPackageName());
@@ -102,7 +101,8 @@ public class LocationService extends Service implements BDLocationListener {
 
     @Override
     public void onDestroy() {
-        locationClient.stop();
+        locationClient.stopLocation();
+        locationClient.onDestroy();
         unbindService(mqttConn);
         super.onDestroy();
     }

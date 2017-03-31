@@ -16,21 +16,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.MapView;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.CameraPosition;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.android.volley.Request;
-import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.MapPoi;
-import com.baidu.mapapi.map.MapStatusUpdateFactory;
-import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.Marker;
-import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.core.SearchResult;
-import com.baidu.mapapi.search.geocode.GeoCodeResult;
-import com.baidu.mapapi.search.geocode.GeoCoder;
-import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,13 +62,13 @@ public class MonitorFragment extends Fragment {
     private static final int MARKER_TYPE_CLEANER = 2;
     private static final int MARKER_TYPE_TRASH = 3;
 
-    private BaiduMap baiduMap;
+    private AMap amap;
     private boolean mapCenterFlag = false;
 
     @BindDimen(R.dimen.normal_icon_size) int DIMEN_NORMAL_ICON;
 
     private View rootView;
-    @BindView(R.id.bmap_view) MapView mMapView;
+    @BindView(R.id.amap_view) MapView mMapView;
     @BindView(R.id.user_location_area) View userLocationView;
     @BindView(R.id.txt_user_location) TextView txtUserLocation;
     @BindView(R.id.txt_user_update_time) TextView txtUserUpdateTime;
@@ -96,8 +90,6 @@ public class MonitorFragment extends Fragment {
     private Map<Long, Marker> cleanerMarkerMap = new HashMap<>();
     private Map<Long, UserLocation> cleanerLocationMap = new HashMap<>();
     private long currentShowCleanerId = -1;
-    private GeoCoder userLocationGeoCoder;
-    private GeoCoder cleanerLocationGeoCoder;
     private LocationReceiver locationReceiver;
 
     private Map<Long, WorkRecord> trashWorkRecordMap = new HashMap<>();
@@ -139,25 +131,26 @@ public class MonitorFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_monitor, container, false);
         ButterKnife.bind(this, rootView);
 
-        baiduMap = mMapView.getMap();
-        baiduMap.setMapStatus(MapStatusUpdateFactory.zoomTo(18));
-        baiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
+        mMapView.onCreate(savedInstanceState);
+        amap = mMapView.getMap();
+        amap.getUiSettings().setCompassEnabled(true);
+        amap.getUiSettings().setScaleControlsEnabled(true);
+        amap.getUiSettings().setZoomGesturesEnabled(true);
+        amap.getUiSettings().setScrollGesturesEnabled(true);
+        amap.getUiSettings().setRotateGesturesEnabled(true);
+        amap.moveCamera(CameraUpdateFactory.zoomTo(18f));
+        amap.setOnMapClickListener(new AMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 if(GlobalInfo.user.getAccountType() == User.ACCOUNT_TYPE_CLEANER) {
                     showUserLocationInfo(true);
                 }
             }
-
-            @Override
-            public boolean onMapPoiClick(MapPoi mapPoi) {
-                return false;
-            }
         });
-        baiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+        amap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                Bundle bundle = marker.getExtraInfo();
+                Bundle bundle = (Bundle) marker.getObject();
                 switch (bundle.getInt(BUNDLE_KEY_MARKER_TYPE)){
                     case MARKER_TYPE_USER:
                         showUserLocationInfo(true);
@@ -172,36 +165,6 @@ public class MonitorFragment extends Fragment {
                 return true;
             }
         });
-        userLocationGeoCoder = GeoCoder.newInstance();
-        userLocationGeoCoder.setOnGetGeoCodeResultListener(new OnGetGeoCoderResultListener() {
-            @Override
-            public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {}
-
-            @Override
-            public void onGetReverseGeoCodeResult(ReverseGeoCodeResult reverseGeoCodeResult) {
-                if(reverseGeoCodeResult == null || reverseGeoCodeResult.error != SearchResult.ERRORNO.NO_ERROR){
-                    showGeoCoderError(reverseGeoCodeResult);
-                    txtUserLocation.setText(R.string.unknown_location);
-                    return;
-                }
-                txtUserLocation.setText(reverseGeoCodeResult.getAddress());
-            }
-        });
-        cleanerLocationGeoCoder = GeoCoder.newInstance();
-        cleanerLocationGeoCoder.setOnGetGeoCodeResultListener(new OnGetGeoCoderResultListener() {
-            @Override
-            public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {}
-
-            @Override
-            public void onGetReverseGeoCodeResult(ReverseGeoCodeResult reverseGeoCodeResult) {
-                if(reverseGeoCodeResult == null || reverseGeoCodeResult.error != SearchResult.ERRORNO.NO_ERROR){
-                    showGeoCoderError(reverseGeoCodeResult);
-                    txtCleanerLocation.setText(R.string.unknown_location);
-                    return;
-                }
-                txtCleanerLocation.setText(reverseGeoCodeResult.getAddress());
-            }
-        });
 
         MarkerOptions trashMarkerOpts = new MarkerOptions()
                 .alpha(0.9f)
@@ -209,11 +172,11 @@ public class MonitorFragment extends Fragment {
                 .icon(BitmapDescriptorFactory.fromBitmap(ImageUtil.getBitmapFromDrawable(getContext(), R.drawable.ic_delete_green_32dp)));
         for(Trash t : GlobalInfo.trashList){
             trashMarkerOpts.position(new LatLng(t.getLatitude(), t.getLongitude()));
-            Marker trashMarker = (Marker) baiduMap.addOverlay(trashMarkerOpts);
+            Marker trashMarker = amap.addMarker(trashMarkerOpts);
             Bundle extraInfo = new Bundle();
             extraInfo.putInt(BUNDLE_KEY_MARKER_TYPE, MARKER_TYPE_TRASH);
             extraInfo.putLong(BUNDLE_KEY_TRASH_ID, t.getTrashId());
-            trashMarker.setExtraInfo(extraInfo);
+            trashMarker.setObject(extraInfo);
         }
 
         locationReceiver = new LocationReceiver();
@@ -234,10 +197,9 @@ public class MonitorFragment extends Fragment {
 
     @OnClick(R.id.user_location_area)
     void onUserLocationViewClick(View v){
-        baiduMap.setMapStatus(MapStatusUpdateFactory.newLatLng(
-                new LatLng(GlobalInfo.currentLocation.getLatitude(),
-                        GlobalInfo.currentLocation.getLongitude())
-        ));
+        amap.animateCamera(CameraUpdateFactory.newCameraPosition(
+                new CameraPosition(new LatLng(GlobalInfo.currentLocation.getLatitude(),
+                        GlobalInfo.currentLocation.getLongitude()), 18, 0, 0)));
     }
 
     @OnClick(R.id.cleaner_view_area)
@@ -258,15 +220,17 @@ public class MonitorFragment extends Fragment {
                     .alpha((float) 0.9)
                     .icon(BitmapDescriptorFactory.fromBitmap(ImageUtil.getBitmapFromDrawable(getContext(), R.drawable.ic_location_red)))
                     .position(pos);
-            userMarker = (Marker) baiduMap.addOverlay(userMarkerOptions);
+            userMarker = amap.addMarker(userMarkerOptions);
             Bundle extraInfo = new Bundle();
             extraInfo.putInt(BUNDLE_KEY_MARKER_TYPE, MARKER_TYPE_USER);
-            userMarker.setExtraInfo(extraInfo);
+            userMarker.setObject(extraInfo);
         }else{
             userMarker.setPosition(pos);
         }
         if(!mapCenterFlag){
-            baiduMap.setMapStatus(MapStatusUpdateFactory.newLatLng(pos));
+            amap.moveCamera(CameraUpdateFactory.newCameraPosition(
+                    new CameraPosition(pos, 18, 0, 0)
+            ));
             mapCenterFlag = true;
         }
         if(cleanerLocationView.getVisibility() == View.VISIBLE || trashMonitorView.getVisibility() == View.VISIBLE)
@@ -280,10 +244,12 @@ public class MonitorFragment extends Fragment {
         cleanerLocationView.setVisibility(View.GONE);
         trashMonitorView.setVisibility(View.GONE);
         if(userLocationView.getVisibility() != View.VISIBLE || !fromUser){
-            LatLng pos = new LatLng(GlobalInfo.currentLocation.getLatitude(), GlobalInfo.currentLocation.getLongitude());
             userLocationView.setVisibility(View.VISIBLE);
             txtUserUpdateTime.setText(DateTimeUtil.convertTimestamp(getContext(), GlobalInfo.currentLocation.getUpdateTime(), true, true, true));
-            userLocationGeoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(pos));
+            if(GlobalInfo.currentLocation.getAddress() != null && !GlobalInfo.currentLocation.getAddress().isEmpty())
+                txtUserLocation.setText(GlobalInfo.currentLocation.getAddress());
+            else
+                txtUserLocation.setText(R.string.unknown_location);
         }
     }
 
@@ -297,20 +263,22 @@ public class MonitorFragment extends Fragment {
                 return;
             MarkerOptions markerOptions = new MarkerOptions()
                     .draggable(false)
-                    .alpha((float) 0.9)
+                    .alpha(0.9f)
                     .icon(BitmapDescriptorFactory.fromBitmap(
                             ImageUtil.getCroppedBitmap(u.getPortrait(), DIMEN_NORMAL_ICON)
                     ))
                     .position(pos);
-            marker = (Marker) baiduMap.addOverlay(markerOptions);
+            marker = amap.addMarker(markerOptions);
             Bundle extraInfo = new Bundle();
             extraInfo.putInt(BUNDLE_KEY_MARKER_TYPE, MARKER_TYPE_CLEANER);
             extraInfo.putLong(BUNDLE_KEY_USER_ID, u.getUserId());
-            marker.setExtraInfo(extraInfo);
+            marker.setObject(extraInfo);
             cleanerMarkerMap.put(u.getUserId(), marker);
         }
         if(!mapCenterFlag){
-            baiduMap.setMapStatus(MapStatusUpdateFactory.newLatLng(pos));
+            amap.moveCamera(CameraUpdateFactory.newCameraPosition(
+                    new CameraPosition(pos, 18, 0, 0)
+            ));
             mapCenterFlag = true;
         }
         if(cleanerLocationView.getVisibility() == View.VISIBLE && newLoc.getUserId() == currentShowCleanerId)
@@ -330,8 +298,10 @@ public class MonitorFragment extends Fragment {
             cleanerPortrait.setImageBitmap(u.getPortrait());
             txtCleanerName.setText(u.getName());
             txtCleanerUpdateTime.setText(DateTimeUtil.convertTimestamp(getContext(), loc.getUpdateTime(), true, true, true));
-            LatLng pos = new LatLng(loc.getLatitude(), loc.getLongitude());
-            cleanerLocationGeoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(pos));
+            if(loc.getAddress() != null || !loc.getAddress().isEmpty())
+                txtCleanerLocation.setText(loc.getAddress());
+            else
+                txtCleanerLocation.setText(R.string.unknown_location);
         }
     }
 
@@ -400,22 +370,12 @@ public class MonitorFragment extends Fragment {
                 }));
     }
 
-    private void showGeoCoderError(ReverseGeoCodeResult reverseGeoCodeResult){
-        if(reverseGeoCodeResult == null){
-            Log.e(LOG_TAG_GEO_CODER, "Geo coder error");
-        }else if(reverseGeoCodeResult.error != SearchResult.ERRORNO.NO_ERROR){
-            Log.e(LOG_TAG_GEO_CODER, "Geo coder error code: " + reverseGeoCodeResult.error);
-        }
-    }
-
     @Override
     public void onDestroy() {
         mMapView.onDestroy();
         getContext().unregisterReceiver(workRecordReceiver);
         getContext().unregisterReceiver(locationReceiver);
         rootView = null;
-        userLocationGeoCoder.destroy();
-        cleanerLocationGeoCoder.destroy();
         if(mqttConn != null)
             getContext().unbindService(mqttConn);
         super.onDestroy();
@@ -426,10 +386,17 @@ public class MonitorFragment extends Fragment {
         super.onResume();
         mMapView.onResume();
     }
+
     @Override
     public void onPause() {
         mMapView.onPause();
         super.onPause();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mMapView.onSaveInstanceState(outState);
     }
 
     private class LocationReceiver extends BroadcastReceiver{
