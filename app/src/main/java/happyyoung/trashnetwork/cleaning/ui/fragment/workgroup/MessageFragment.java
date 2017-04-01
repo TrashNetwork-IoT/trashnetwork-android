@@ -23,6 +23,7 @@ import happyyoung.trashnetwork.cleaning.R;
 import happyyoung.trashnetwork.cleaning.adapter.SessionMessageAdapter;
 import happyyoung.trashnetwork.cleaning.database.model.ChatMessageRecord;
 import happyyoung.trashnetwork.cleaning.database.model.SessionRecord;
+import happyyoung.trashnetwork.cleaning.model.Group;
 import happyyoung.trashnetwork.cleaning.model.User;
 import happyyoung.trashnetwork.cleaning.ui.activity.ChatActivity;
 import happyyoung.trashnetwork.cleaning.util.DatabaseUtil;
@@ -117,6 +118,13 @@ public class MessageFragment extends Fragment {
                         return;
                     item.setPortrait(u.getPortrait());
                     item.setDisplayName(u.getName());
+                    break;
+                case SessionRecord.SESSION_TYPE_GROUP:
+                    Group g = GlobalInfo.findGroupById(newSession.getSessionId());
+                    if(g == null)
+                        return;
+                    item.setPortrait(g.getPortrait());
+                    item.setDisplayName(g.getName());
                     break;
             }
         }

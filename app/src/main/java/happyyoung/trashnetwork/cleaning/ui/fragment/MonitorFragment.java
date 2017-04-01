@@ -9,7 +9,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,6 +82,7 @@ public class MonitorFragment extends Fragment {
     @BindView(R.id.icon_trash) ImageView iconTrash;
     @BindView(R.id.txt_trash_name) TextView txtTrashName;
     @BindView(R.id.txt_trash_desc) TextView txtTrashDesc;
+    @BindView(R.id.txt_trash_cleaned_date) TextView txtTrashCleanedDate;
     @BindView(R.id.txt_trash_cleaned_time) TextView txtTrashCleanedTime;
     @BindView(R.id.trash_cleaner_portrait) ImageView trashCleanerPortrait;
 
@@ -317,10 +317,11 @@ public class MonitorFragment extends Fragment {
         txtTrashDesc.setText(t.getDescription());
         WorkRecord wr = trashWorkRecordMap.get(trashId);
         if(wr != null){
-            final User u = GlobalInfo.findUserById(wr.getCleanerId());
+            final User u = GlobalInfo.findUserById(wr.getUserId());
             if(u == null)
                 return;
-            txtTrashCleanedTime.setText(DateTimeUtil.convertTimestamp(getContext(), wr.getRecordTime(), true, true, false));
+            txtTrashCleanedDate.setText(DateTimeUtil.convertTimestamp(getContext(), wr.getRecordTime(), true, false, false));
+            txtTrashCleanedTime.setText(DateTimeUtil.convertTimestamp(getContext(), wr.getRecordTime(), false, true, false));
             trashCleanerPortrait.setImageBitmap(u.getPortrait());
             trashCleanerPortrait.setOnClickListener(new View.OnClickListener() {
                 @Override

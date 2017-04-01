@@ -104,7 +104,7 @@ public class UserInfoActivity extends AppCompatActivity {
         }else{
             btnCall.setVisibility(View.GONE);
         }
-        if(getIntent().getBooleanExtra(BUNDLE_KEY_SHOW_CHATTING, true)){
+        if(getIntent().getBooleanExtra(BUNDLE_KEY_SHOW_CHATTING, true) && !user.getUserId().equals(GlobalInfo.user.getUserId())){
             contactCard.addItem(R.drawable.ic_chat, getString(R.string.action_send_message), null, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

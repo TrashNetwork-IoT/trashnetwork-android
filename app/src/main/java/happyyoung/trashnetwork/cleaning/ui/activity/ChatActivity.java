@@ -36,6 +36,7 @@ import happyyoung.trashnetwork.cleaning.R;
 import happyyoung.trashnetwork.cleaning.adapter.ChatMessageAdapter;
 import happyyoung.trashnetwork.cleaning.database.model.ChatMessageRecord;
 import happyyoung.trashnetwork.cleaning.database.model.SessionRecord;
+import happyyoung.trashnetwork.cleaning.model.Group;
 import happyyoung.trashnetwork.cleaning.model.User;
 import happyyoung.trashnetwork.cleaning.receiver.ChatMessageReceiver;
 import happyyoung.trashnetwork.cleaning.service.MqttService;
@@ -56,6 +57,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private LinkedList<Object> messageList = new LinkedList<>();
     private ChatMessageAdapter adapter;
+    private ChatMessageAdapter.MessageItem.OnSenderClickListener onSenderClickListener;
     private Calendar endTime;
 
     private SessionRecord session;
@@ -102,13 +104,24 @@ public class ChatActivity extends AppCompatActivity {
 
         if(sessionType == SessionRecord.SESSION_TYPE_GROUP) {
             adapter = new ChatMessageAdapter(this, messageList, true);
+            Group g = GlobalInfo.findGroupById(sessionId);
+            toolbarPortrait.setImageBitmap(g.getPortrait());
+            txtToolbarContactName.setText(g.getName());
         }else {
             adapter = new ChatMessageAdapter(this, messageList, false);
             User u = GlobalInfo.findUserById(sessionId);
             toolbarPortrait.setImageBitmap(u.getPortrait());
             txtToolbarContactName.setText(u.getName());
-            setTitle(GlobalInfo.findUserById(sessionId).getName());
         }
+        onSenderClickListener = new ChatMessageAdapter.MessageItem.OnSenderClickListener() {
+            @Override
+            public void onClick(User sender) {
+                Intent intent = new Intent(ChatActivity.this, UserInfoActivity.class);
+                intent.putExtra(UserInfoActivity.BUNDLE_KEY_USER_ID, sender.getUserId());
+                intent.putExtra(UserInfoActivity.BUNDLE_KEY_SHOW_CHATTING, session.getSessionType() == SessionRecord.SESSION_TYPE_GROUP);
+                startActivity(intent);
+            }
+        };
         chatListView.setAdapter(adapter);
         updateChatHistory();
 
@@ -148,11 +161,17 @@ public class ChatActivity extends AppCompatActivity {
 
     @OnClick(R.id.toolbar_contact_view)
     void onToolbarContactViewClick(View v){
+        Intent intent;
         switch (session.getSessionType()){
             case SessionRecord.SESSION_TYPE_USER:
-                Intent intent = new Intent(this, UserInfoActivity.class);
+                intent = new Intent(this, UserInfoActivity.class);
                 intent.putExtra(UserInfoActivity.BUNDLE_KEY_USER_ID, session.getSessionId());
                 intent.putExtra(UserInfoActivity.BUNDLE_KEY_SHOW_CHATTING, false);
+                startActivity(intent);
+                break;
+            case SessionRecord.SESSION_TYPE_GROUP:
+                intent = new Intent(this, GroupInfoActivity.class);
+                intent.putExtra(GroupInfoActivity.BUNDLE_KEY_GROUP_ID, session.getSessionId());
                 startActivity(intent);
                 break;
         }
@@ -167,10 +186,10 @@ public class ChatActivity extends AppCompatActivity {
                 endTime.setTimeInMillis(cmr.getMessageTime().getTime() - 1);
                 if(GlobalInfo.user.getUserId() == cmr.getSenderId()){
                     messageList.addFirst(new ChatMessageAdapter.MessageItem(ChatMessageAdapter.MessageItem.POSITION_END,
-                            GlobalInfo.user, cmr));
+                            GlobalInfo.user, cmr, null));
                 }else{
                     messageList.addFirst(new ChatMessageAdapter.MessageItem(ChatMessageAdapter.MessageItem.POSITION_START,
-                            GlobalInfo.findUserById(cmr.getSenderId()), cmr));
+                            GlobalInfo.findUserById(cmr.getSenderId()), cmr, onSenderClickListener));
                 }
                 adapter.notifyItemInserted(0);
             }
@@ -212,7 +231,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void sendMessage(ChatMessageRecord newMessage){
-        messageList.addLast(new ChatMessageAdapter.MessageItem(ChatMessageAdapter.MessageItem.POSITION_END, GlobalInfo.user, newMessage));
+        messageList.addLast(new ChatMessageAdapter.MessageItem(ChatMessageAdapter.MessageItem.POSITION_END, GlobalInfo.user, newMessage, null));
         adapter.notifyItemInserted(messageList.size() - 1);
         chatListView.smoothScrollToPosition(messageList.size() - 1);
 
@@ -295,7 +314,7 @@ public class ChatActivity extends AppCompatActivity {
             if(newSessionFlag)
                 updateSession();
             boolean scrollFlag = ((LinearLayoutManager)chatListView.getLayoutManager()).findLastVisibleItemPosition() > messageList.size() - 3;
-            messageList.addLast(new ChatMessageAdapter.MessageItem(ChatMessageAdapter.MessageItem.POSITION_START, GlobalInfo.findUserById(cmr.getSenderId()), cmr));
+            messageList.addLast(new ChatMessageAdapter.MessageItem(ChatMessageAdapter.MessageItem.POSITION_START, GlobalInfo.findUserById(cmr.getSenderId()), cmr, onSenderClickListener));
             adapter.notifyItemInserted(messageList.size() - 1);
             if(scrollFlag)
                 chatListView.smoothScrollToPosition(messageList.size() - 1);

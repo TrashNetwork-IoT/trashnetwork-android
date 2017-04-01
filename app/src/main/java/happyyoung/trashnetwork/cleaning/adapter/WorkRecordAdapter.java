@@ -105,7 +105,7 @@ public class WorkRecordAdapter extends RecyclerView.Adapter<WorkRecordAdapter.Wo
             });
         }
         if(viewType == VIEW_TYPE_WORK_RECORD_CLEANER_VIEW || viewType == VIEW_TYPE_WORK_RECORD_FULL){
-            final User u = GlobalInfo.findUserById(wr.getCleanerId());
+            final User u = GlobalInfo.findUserById(wr.getUserId());
             if(u == null)
                 return;
             holder.cleanerPortrait.setImageBitmap(u.getPortrait());

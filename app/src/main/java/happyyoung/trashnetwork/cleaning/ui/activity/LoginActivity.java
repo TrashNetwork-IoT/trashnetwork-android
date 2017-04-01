@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -40,6 +39,7 @@ import happyyoung.trashnetwork.cleaning.net.model.request.LoginRequest;
 import happyyoung.trashnetwork.cleaning.net.model.result.GroupListResult;
 import happyyoung.trashnetwork.cleaning.net.model.result.LoginResult;
 import happyyoung.trashnetwork.cleaning.net.model.result.Result;
+import happyyoung.trashnetwork.cleaning.net.model.result.TrashListResult;
 import happyyoung.trashnetwork.cleaning.net.model.result.UserListResult;
 import happyyoung.trashnetwork.cleaning.net.model.result.UserResult;
 import happyyoung.trashnetwork.cleaning.util.DatabaseUtil;
@@ -246,19 +246,47 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(GroupListResult data) {
                 GlobalInfo.groupList = data.getGroupList();
+                getTrashInfo(activity, listener);
+            }
+
+            @Override
+            public boolean onErrorResponse(int statusCode, Result errorInfo) {
+                if(errorInfo.getResultCode() == PublicResultCode.GROUP_NOT_FOUND){
+                    getTrashInfo(activity, listener);
+                    return true;
+                }
+                return listener.onErrorResponse(statusCode, errorInfo);
+            }
+
+            @Override
+            public boolean onDataCorrupted(Throwable e) {
+                return listener.onDataCorrupted(e);
+            }
+
+            @Override
+            public boolean onNetworkError(Throwable e) {
+                return listener.onNetworkError(e);
+            }
+        }));
+    }
+
+    private static void getTrashInfo(final Activity activity, final HttpApiJsonListener<Result> listener){
+        HttpApi.startRequest(new HttpApiJsonRequest(activity, HttpApi.getApiUrl(HttpApi.PublicApi.ALL_TRASHES), Request.Method.GET,
+                null, null, new HttpApiJsonListener<TrashListResult>(TrashListResult.class) {
+            @Override
+            public void onResponse(TrashListResult data) {
+                GlobalInfo.trashList = data.getTrashList();
                 enterMainActivity(activity);
             }
 
             @Override
             public boolean onErrorResponse(int statusCode, Result errorInfo) {
-                enterMainActivity(activity);
-                return true;
+                return listener.onErrorResponse(statusCode, errorInfo);
             }
 
             @Override
             public boolean onDataCorrupted(Throwable e) {
-                enterMainActivity(activity);
-                return true;
+                return listener.onDataCorrupted(e);
             }
 
             @Override

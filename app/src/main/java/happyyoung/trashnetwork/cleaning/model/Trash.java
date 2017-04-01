@@ -1,6 +1,7 @@
 package happyyoung.trashnetwork.cleaning.model;
 
 import android.content.Context;
+
 import happyyoung.trashnetwork.cleaning.R;
 
 /**
@@ -11,14 +12,14 @@ public class Trash {
     private String description;
     private Double longitude;
     private Double latitude;
-    private Boolean recyclePoint;
+    private Boolean bottleRecycle;
 
-    public Trash(Long trashId, String description, Double longitude, Double latitude, Boolean recyclePoint) {
+    public Trash(Long trashId, String description, Double longitude, Double latitude, Boolean bottleRecycle) {
         this.trashId = trashId;
         this.description = description;
         this.longitude = longitude;
         this.latitude = latitude;
-        this.recyclePoint = recyclePoint;
+        this.bottleRecycle = bottleRecycle;
     }
 
     public Long getTrashId() {
@@ -57,11 +58,11 @@ public class Trash {
         this.latitude = latitude;
     }
 
-    public Boolean isRecyclePoint() {
-        return recyclePoint;
+    public Boolean isBottleRecycle() {
+        return bottleRecycle;
     }
 
-    public void setRecyclePoint(Boolean recyclePoint) {
-        this.recyclePoint = recyclePoint;
+    public void setBottleRecycle(Boolean bottleRecycle) {
+        this.bottleRecycle = bottleRecycle;
     }
 }

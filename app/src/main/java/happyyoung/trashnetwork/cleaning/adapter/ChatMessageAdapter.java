@@ -71,8 +71,15 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Object obj = messageList.get(position);
         if(holder instanceof MessageViewHolder && obj instanceof MessageItem){
-            MessageItem messageItem = (MessageItem) obj;
+            final MessageItem messageItem = (MessageItem) obj;
             ((MessageViewHolder) holder).senderPortrait.setImageBitmap(messageItem.sender.getPortrait());
+            ((MessageViewHolder) holder).senderPortrait.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(messageItem.listener != null)
+                        messageItem.listener.onClick(messageItem.sender);
+                }
+            });
             ((MessageViewHolder) holder).messageTimeText.setText(DateTimeUtil.convertTimestamp(context, messageItem.message.getMessageTime(), true, true));
             if(messageItem.message.getMessageType() == ChatMessageRecord.MESSAGE_TYPE_TEXT){
                 TextView chatText = (TextView) ((MessageViewHolder) holder).chatMessageView.findViewWithTag("text");
@@ -130,11 +137,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         private int position;
         private User sender;
         private ChatMessageRecord message;
+        private OnSenderClickListener listener;
 
-        public MessageItem(int position, User sender, ChatMessageRecord message) {
+        public MessageItem(int position, User sender, ChatMessageRecord message, @Nullable OnSenderClickListener listener) {
             this.position = position;
             this.sender = sender;
             this.message = message;
+            this.listener = listener;
         }
 
         public ChatMessageRecord getMessage() {
@@ -147,6 +156,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         public int getPosition() {
             return position;
+        }
+
+        public interface OnSenderClickListener {
+            void onClick(User sender);
         }
     }
 }

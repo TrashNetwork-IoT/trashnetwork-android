@@ -30,6 +30,8 @@ public class LocationService extends Service implements AMapLocationListener {
     private ServiceConnection mqttConn;
     private Calendar publishTime;
 
+    private long lastLocTime = -1;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -76,9 +78,10 @@ public class LocationService extends Service implements AMapLocationListener {
         if (aMapLocation.getErrorCode() == 0) {
             if(GlobalInfo.user == null)
                 return;
+            if(aMapLocation.getTime() < lastLocTime)
+                return;
             UserLocation newLoc = new UserLocation(GlobalInfo.user.getUserId(), aMapLocation.getLongitude(),
-                    aMapLocation.getLatitude(), new Date(aMapLocation.getTime()),
-                    aMapLocation.getAddress());
+                    aMapLocation.getLatitude(), new Date(), aMapLocation.getAddress());
             sendLocation(newLoc);
         }else {
             Log.e(TAG, "location Error, ErrCode:" + aMapLocation.getErrorCode() + ", errInfo:"

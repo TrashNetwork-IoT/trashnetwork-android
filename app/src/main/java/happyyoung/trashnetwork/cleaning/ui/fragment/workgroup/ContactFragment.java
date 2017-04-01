@@ -107,14 +107,16 @@ public class ContactFragment extends Fragment implements ContactListener {
             return;
         if(groupIdUsedMap.containsKey(newGroup.getGroupId()))
             return;
-        userIdUsedMap.put(newGroup.getGroupId(), true);
-        groupListRoot.addChild(new TreeNode(new TreeNode(new ContactListContactHolder.IconTextItem(newGroup.getPortrait(), newGroup.getName()))
+        groupIdUsedMap.put(newGroup.getGroupId(), true);
+        groupListRoot.addChild(new TreeNode(new ContactListContactHolder.IconTextItem(newGroup.getPortrait(), newGroup.getName()))
                 .setViewHolder(new ContactListContactHolder(getContext(), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         enterChatting(SessionRecord.SESSION_TYPE_GROUP, newGroup.getGroupId());
                     }
-                }))));
+                })));
+        ((ContactListRootHolder)groupListRoot.getViewHolder()).updateNodeView(
+                new ContactListRootHolder.IconTextItem(R.drawable.ic_contacts, getString(R.string.groups), groupListRoot.getChildren().size()));
     }
 
     private void enterChatting(char sessionType, long sessionId){

@@ -49,4 +49,8 @@ public class HttpApi {
     public static class FeedbackApi{
         public static final String QUERY_FEEDBACK = "public/feedback/feedbacks";
     }
+
+    public static class PublicApi {
+        public static final String ALL_TRASHES = "public/trash/all_trashes";
+    }
 }

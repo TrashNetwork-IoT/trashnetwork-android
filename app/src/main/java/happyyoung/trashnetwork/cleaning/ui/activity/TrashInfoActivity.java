@@ -105,7 +105,7 @@ public class TrashInfoActivity extends AppCompatActivity {
                 .scrollGesturesEnabled(false)
                 .rotateGesturesEnabled(false);
         mapView = new MapView(this, options);
-        mapView.onSaveInstanceState(savedInstanceState);
+        mapView.onCreate(savedInstanceState);
         mapView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 getResources().getDimensionPixelSize(R.dimen.trash_info_map_height)));
         locationCard.addCustomView(mapView);

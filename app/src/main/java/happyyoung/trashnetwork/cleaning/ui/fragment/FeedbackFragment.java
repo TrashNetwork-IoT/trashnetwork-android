@@ -116,7 +116,7 @@ public class FeedbackFragment extends Fragment {
         HttpApi.startRequest(new HttpApiJsonRequest(getActivity(), url, Request.Method.GET, GlobalInfo.token, null, new HttpApiJsonListener<FeedbackListResult>(FeedbackListResult.class) {
             @Override
             public void onResponse(FeedbackListResult data) {
-                showContentView(false, refresh);
+                showContentView(true, refresh);
                 if(refresh) {
                     feedbackList.clear();
                     adapter.notifyDataSetChanged();

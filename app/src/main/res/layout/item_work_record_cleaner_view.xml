@@ -24,9 +24,9 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/cleaner_portrait"
-            android:layout_width="@dimen/normal_icon_size"
-            android:layout_height="@dimen/normal_icon_size"
-            android:layout_marginEnd="@dimen/item_padding"
+            android:layout_width="@dimen/large_icon_size"
+            android:layout_height="@dimen/large_icon_size"
+            android:layout_marginEnd="@dimen/item_padding_small"
             android:layout_gravity="center_vertical"
             app:civ_border_width="1dp"
             app:civ_fill_color="@color/grey_200"
