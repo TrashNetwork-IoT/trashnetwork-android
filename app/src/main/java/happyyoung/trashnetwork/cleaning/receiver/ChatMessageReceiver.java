@@ -142,8 +142,6 @@ public class ChatMessageReceiver extends BroadcastReceiver {
             case SessionRecord.SESSION_TYPE_USER:
                 if(GlobalInfo.findUserById(cmr.getSenderId()) == null)
                     return false;
-                if(mqttIntent.getIntExtra(MqttService.BUNDLE_KEY_TOPIC_TYPE, -1) != MqttService.TOPIC_TYPE_PRIVATE)
-                    return false;
                 if(mqttIntent.getLongExtra(MqttService.BUNDLE_KEY_TOPIC_OWNER_ID, -1) != GlobalInfo.user.getUserId())
                     return false;
                 break;

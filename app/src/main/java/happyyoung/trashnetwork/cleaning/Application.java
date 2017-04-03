@@ -30,10 +30,11 @@ public class Application extends com.activeandroid.app.Application {
     public static String ACTION_CLEAN_REMINDER;
     public static String ACTION_LATEST_WORK_RECORD;
 
-    public static String MQTT_TOPIC_CHATTING = "Chatting";
-    public static String MQTT_TOPIC_CLEANER_LOCATION = "CleanerLocation";
-    public static String MQTT_TOPIC_LATEST_WORK_RECORD = "LatestWorkRecord";
-    public static String MQTT_TOPIC_CLEAN_REMINDER = "CleanReminder";
+    public static String MQTT_TOPIC_CHATTING_PRIVATE = "chatting_private";
+    public static String MQTT_TOPIC_CHATTING_GROUP = "chatting_group";
+    public static String MQTT_TOPIC_CLEANER_LOCATION = "cleaner_location";
+    public static String MQTT_TOPIC_LATEST_WORK_RECORD = "latest_work_record";
+    public static String MQTT_TOPIC_CLEAN_REMINDER = "cleaning_reminder";
 
     public static int RANDOM_COLOR[];
     private static Random colorRandom;

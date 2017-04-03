@@ -25,12 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class MqttService extends Service implements MqttCallback {
     public static final String BUNDLE_KEY_MESSAGE = "MessageContent";
     public static final String BUNDLE_KEY_TOPIC = "Topic";
-    public static final String BUNDLE_KEY_TOPIC_TYPE = "TopicType";
     public static final String BUNDLE_KEY_TOPIC_OWNER_ID = "TopicOwnerID";
-
-    public static final int TOPIC_TYPE_PUBLIC = 0;
-    public static final int TOPIC_TYPE_PRIVATE = 1;
-    public static final int TOPIC_TYPE_GROUP = 2;
 
     private static final String TAG = "MQTT Service";
     private static final int TIME_OUT = 2000;
@@ -97,7 +92,7 @@ public class MqttService extends Service implements MqttCallback {
                         for(int i = 0; !exitFlag && i < MAX_RETRY + 1; i++){
                             try {
                                 if (mqttAction instanceof MqttSubscriptionAction) {
-                                    String topic = getFullTopic(((MqttSubscriptionAction) mqttAction).topic, ((MqttSubscriptionAction) mqttAction).topicType,
+                                    String topic = getFullTopic(((MqttSubscriptionAction) mqttAction).topic,
                                             ((MqttSubscriptionAction) mqttAction).topicOwnerId);
                                     mqttClient.subscribe(topic, ((MqttSubscriptionAction) mqttAction).qos, new IMqttMessageListener() {
                                         @Override
@@ -115,7 +110,7 @@ public class MqttService extends Service implements MqttCallback {
                                     });
                                     Log.i(TAG, "Subscribe on topic <" + topic + "> successfully.");
                                 } else if (mqttAction instanceof MqttPublishAction) {
-                                    String topic = getFullTopic(((MqttPublishAction) mqttAction).topic, ((MqttPublishAction) mqttAction).topicType,
+                                    String topic = getFullTopic(((MqttPublishAction) mqttAction).topic,
                                             ((MqttPublishAction) mqttAction).topicOwnerId);
                                     mqttClient.publish(topic, ((MqttPublishAction) mqttAction).message.getBytes(), ((MqttPublishAction) mqttAction).qos,
                                             ((MqttPublishAction) mqttAction).retain);
@@ -205,8 +200,8 @@ public class MqttService extends Service implements MqttCallback {
     @Override
     public void deliveryComplete(IMqttDeliveryToken token) {}
 
-    private String getFullTopic(String topic, int topicType, Long topicOwnerId){
-        String result = topic + '/' + topicType;
+    private String getFullTopic(String topic, Long topicOwnerId){
+        String result = topic;
         if(topicOwnerId != null)
             result += '/' + topicOwnerId.toString();
         return result;
@@ -220,16 +215,9 @@ public class MqttService extends Service implements MqttCallback {
             intent.putExtra(BUNDLE_KEY_TOPIC, topicSplit[0]);
             if(topicSplit.length >= 2) {
                 try {
-                    intent.putExtra(BUNDLE_KEY_TOPIC_TYPE, Integer.valueOf(topicSplit[1]));
-                }catch (NumberFormatException nfe){
+                    intent.putExtra(BUNDLE_KEY_TOPIC_OWNER_ID, Long.valueOf(topicSplit[1]));
+                } catch (NumberFormatException nfe) {
                     nfe.printStackTrace();
-                }
-                if(topicSplit.length >= 3){
-                    try {
-                        intent.putExtra(BUNDLE_KEY_TOPIC_OWNER_ID, Long.valueOf(topicSplit[2]));
-                    }catch (NumberFormatException nfe){
-                        nfe.printStackTrace();
-                    }
                 }
             }
         }
@@ -258,14 +246,12 @@ public class MqttService extends Service implements MqttCallback {
 
     public static class MqttSubscriptionAction implements Serializable {
         private String topic;
-        private int topicType;
         private Long topicOwnerId;
         private int qos;
         private String action;
 
-        public MqttSubscriptionAction(String topic, int topicType, @Nullable Long topicOwnerId, int qos, @Nullable String broadcastAction) {
+        public MqttSubscriptionAction(String topic, @Nullable Long topicOwnerId, int qos, @Nullable String broadcastAction) {
             this.topic = topic;
-            this.topicType = topicType;
             this.topicOwnerId = topicOwnerId;
             this.qos = qos;
             this.action = broadcastAction;
@@ -275,16 +261,14 @@ public class MqttService extends Service implements MqttCallback {
 
     public static class MqttPublishAction implements Serializable {
         private String topic;
-        private int topicType;
         private Long topicOwnerId;
         private int qos;
         private boolean retain = false;
         private String message;
         private Intent intent;
 
-        public MqttPublishAction(String topic, int topicType, @Nullable Long topicOwnerId, int qos, String message, @Nullable Intent intent) {
+        public MqttPublishAction(String topic, @Nullable Long topicOwnerId, int qos, String message, @Nullable Intent intent) {
             this.topic = topic;
-            this.topicType = topicType;
             this.topicOwnerId = topicOwnerId;
             this.qos = qos;
             this.message = message;

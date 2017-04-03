@@ -19,7 +19,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -245,13 +244,11 @@ public class ChatActivity extends AppCompatActivity {
         sentIntent.putExtra(Application.BUNDLE_KEY_CHAT_MSG_DB_ID, newMessage.getId());
         switch (session.getSessionType()){
             case SessionRecord.SESSION_TYPE_USER:
-                mqttService.addMQTTAction(new MqttService.MqttPublishAction(
-                        Application.MQTT_TOPIC_CHATTING, MqttService.TOPIC_TYPE_PRIVATE, session.getSessionId(),
+                mqttService.addMQTTAction(new MqttService.MqttPublishAction(Application.MQTT_TOPIC_CHATTING_PRIVATE, session.getSessionId(),
                         1, gson.toJson(newMessage), sentIntent));
                 break;
             case SessionRecord.SESSION_TYPE_GROUP:
-                mqttService.addMQTTAction(new MqttService.MqttPublishAction(
-                        Application.MQTT_TOPIC_CHATTING, MqttService.TOPIC_TYPE_GROUP, session.getSessionId(),
+                mqttService.addMQTTAction(new MqttService.MqttPublishAction(Application.MQTT_TOPIC_CHATTING_GROUP, session.getSessionId(),
                         1, gson.toJson(newMessage), sentIntent));
                 break;
         }

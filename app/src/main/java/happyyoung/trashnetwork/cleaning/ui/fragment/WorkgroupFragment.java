@@ -125,12 +125,12 @@ public class WorkgroupFragment extends Fragment {
                 try {
                     MqttService mqttService = ((MqttService.Binder) service).getService();
                     mqttService.addMQTTAction(new MqttService.MqttSubscriptionAction(
-                            Application.MQTT_TOPIC_CHATTING, MqttService.TOPIC_TYPE_PRIVATE, GlobalInfo.user.getUserId(),
+                            Application.MQTT_TOPIC_CHATTING_PRIVATE, GlobalInfo.user.getUserId(),
                             1, Application.ACTION_CHAT_MESSAGE_RECEIVED
                     ));
                     for (Group g : GlobalInfo.groupList){
                         mqttService.addMQTTAction(new MqttService.MqttSubscriptionAction(
-                                Application.MQTT_TOPIC_CHATTING, MqttService.TOPIC_TYPE_GROUP, g.getGroupId(),
+                                Application.MQTT_TOPIC_CHATTING_GROUP, g.getGroupId(),
                                 1, Application.ACTION_CHAT_MESSAGE_RECEIVED
                         ));
                     }

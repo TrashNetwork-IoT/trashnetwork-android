@@ -109,11 +109,11 @@ public class MonitorFragment extends Fragment {
             public void onServiceConnected(ComponentName name, IBinder service) {
                 MqttService mqttService = ((MqttService.Binder)service).getService();
                 mqttService.addMQTTAction(new MqttService.MqttSubscriptionAction(Application.MQTT_TOPIC_CLEANER_LOCATION,
-                        MqttService.TOPIC_TYPE_PUBLIC, null, 0, Application.ACTION_CLEANER_LOCATION));
+                                          null, 0, Application.ACTION_CLEANER_LOCATION));
                 mqttService.addMQTTAction(new MqttService.MqttSubscriptionAction(Application.MQTT_TOPIC_CLEAN_REMINDER,
-                        MqttService.TOPIC_TYPE_PUBLIC, null, 0, Application.ACTION_CLEAN_REMINDER));
+                                          null, 0, Application.ACTION_CLEAN_REMINDER));
                 mqttService.addMQTTAction(new MqttService.MqttSubscriptionAction(Application.MQTT_TOPIC_LATEST_WORK_RECORD,
-                        MqttService.TOPIC_TYPE_PUBLIC, null, 0, Application.ACTION_LATEST_WORK_RECORD));
+                                          null, 0, Application.ACTION_LATEST_WORK_RECORD));
             }
 
             @Override

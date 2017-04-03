@@ -97,8 +97,7 @@ public class LocationService extends Service implements AMapLocationListener {
 
         if(mqttService == null || System.currentTimeMillis() - publishTime.getTimeInMillis() < PUBLISH_INTERVAL)
             return;
-        mqttService.addMQTTAction(new MqttService.MqttPublishAction(Application.MQTT_TOPIC_CLEANER_LOCATION,
-                MqttService.TOPIC_TYPE_PUBLIC, null, 0, GsonUtil.getGson().toJson(newLocation), null));
+        mqttService.addMQTTAction(new MqttService.MqttPublishAction(Application.MQTT_TOPIC_CLEANER_LOCATION, null, 0, GsonUtil.getGson().toJson(newLocation), null));
         publishTime.setTimeInMillis(System.currentTimeMillis());
     }
 

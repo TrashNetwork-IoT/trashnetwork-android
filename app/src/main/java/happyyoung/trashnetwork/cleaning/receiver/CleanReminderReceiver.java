@@ -39,10 +39,8 @@ public class CleanReminderReceiver extends BroadcastReceiver {
             mBuilder.setContentText(String.format(context.getString(R.string.cleaning_reminder_content_format), trashId));
             mBuilder.setSmallIcon(R.drawable.ic_delete_32dp);
             mBuilder.setDefaults(NotificationCompat.DEFAULT_ALL);
-
-            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-            inboxStyle.addLine(t.getDescription());
-            mBuilder.setStyle(inboxStyle);
+            mBuilder.setStyle(new NotificationCompat.BigTextStyle()
+                              .bigText(t.getDescription()));
 
             Intent notifyIntent = new Intent(context, TrashInfoActivity.class);
             notifyIntent.putExtra(TrashInfoActivity.BUNDLE_KEY_TRASH_ID, trashId);
