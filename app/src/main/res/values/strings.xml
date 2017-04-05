@@ -58,7 +58,7 @@
     <string name="anonymous_user">Anonymous User</string>
     <string name="no_feedback">No feedback</string>
     <string name="no_record">No record</string>
-    <string name="trash">Trash</string>
+    <string name="trash_id_format">Trash Can #%d</string>
     <string name="action_send_message">Send message</string>
     <string name="phone_number">Phone number</string>
     <string name="location">Location</string>
@@ -80,5 +80,5 @@
     <string name="content">Content</string>
 
     <string name="cleaning_reminder">Cleaning Reminder</string>
-    <string name="cleaning_reminder_content_format">Trash #%d needs to be cleaned.</string>
+    <string name="cleaning_reminder_content_format">Trash can #%d needs to be cleaned.</string>
 </resources>

@@ -31,7 +31,7 @@ public class Trash {
     }
 
     public String getTrashName(Context context){
-        return context.getString(R.string.trash) + " #" + trashId;
+        return String.format(context.getString(R.string.trash_id_format), trashId);
     }
 
     public String getDescription() {

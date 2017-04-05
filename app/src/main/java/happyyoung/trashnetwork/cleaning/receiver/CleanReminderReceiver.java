@@ -11,25 +11,28 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import happyyoung.trashnetwork.cleaning.R;
+import happyyoung.trashnetwork.cleaning.model.CleaningReminder;
 import happyyoung.trashnetwork.cleaning.model.Trash;
 import happyyoung.trashnetwork.cleaning.service.MqttService;
 import happyyoung.trashnetwork.cleaning.ui.activity.TrashInfoActivity;
 import happyyoung.trashnetwork.cleaning.util.GlobalInfo;
+import happyyoung.trashnetwork.cleaning.util.GsonUtil;
 
 /**
  * Created by shengyun-zhou <GGGZ-1101-28@Live.cn> on 2017-03-29
  */
 public class CleanReminderReceiver extends BroadcastReceiver {
     private static final int CLEAN_REMINDER_NOTIFICATION_ID = 0x233333;
-    private static final String JSON_KEY_TRASH_ID = "trash_id";
+    private static final int CLEAN_REMINDER_OUTDATE_MINUTES = 30;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
-            JsonElement element = new JsonParser().parse(intent.getStringExtra(MqttService.BUNDLE_KEY_MESSAGE));
-            if(!element.getAsJsonObject().has(JSON_KEY_TRASH_ID))
+            CleaningReminder reminder = GsonUtil.getGson().fromJson(intent.getStringExtra(MqttService.BUNDLE_KEY_MESSAGE),
+                    CleaningReminder.class);
+            if(System.currentTimeMillis() - reminder.getRemindTime().getTime() > CLEAN_REMINDER_OUTDATE_MINUTES * 60 * 1000)
                 return;
-            long trashId = element.getAsJsonObject().get(JSON_KEY_TRASH_ID).getAsLong();
+            long trashId = reminder.getTrashId();
             Trash t = GlobalInfo.findTrashById(trashId);
             if(t == null)
                 return;

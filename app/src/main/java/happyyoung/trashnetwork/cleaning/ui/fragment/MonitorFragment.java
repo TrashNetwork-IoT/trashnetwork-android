@@ -111,7 +111,7 @@ public class MonitorFragment extends Fragment {
                 mqttService.addMQTTAction(new MqttService.MqttSubscriptionAction(Application.MQTT_TOPIC_CLEANER_LOCATION,
                                           null, 0, Application.ACTION_CLEANER_LOCATION));
                 mqttService.addMQTTAction(new MqttService.MqttSubscriptionAction(Application.MQTT_TOPIC_CLEAN_REMINDER,
-                                          null, 0, Application.ACTION_CLEAN_REMINDER));
+                                          null, 1, Application.ACTION_CLEAN_REMINDER));
                 mqttService.addMQTTAction(new MqttService.MqttSubscriptionAction(Application.MQTT_TOPIC_LATEST_WORK_RECORD,
                                           null, 0, Application.ACTION_LATEST_WORK_RECORD));
             }
